@@ -1,0 +1,50 @@
+.hud {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-hud);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--pad) 22px;
+  pointer-events: none;
+  visibility: hidden;
+  mix-blend-mode: difference;
+  color: rgba(255, 255, 255, 0.72);
+}
+.hud__left,
+.hud__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: opacity 0.6s var(--ease-out), translate 0.6s var(--ease-out);
+}
+.hud.is-muted .hud__left,
+.hud.is-muted .hud__right { opacity: 0; translate: 0 8px; }
+.hud__tc { min-width: 11ch; color: #fff; }
+.hud__sep { width: 18px; height: 1px; background: rgba(255, 255, 255, 0.4); }
+.hud__marker { min-width: 20ch; }
+.hud__label { opacity: 0.6; }
+.hud__track {
+  position: relative;
+  width: 132px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+.hud__bar {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+}
+.hud__track::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--p, 0) * 100%);
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: #fff;
+}

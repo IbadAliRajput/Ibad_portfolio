@@ -1,0 +1,330 @@
+/* ==========================================================================
+   11 — About: portrait + positioning · roles equation · pillars      (ab-)
+   ========================================================================== */
+.ab {
+  overflow-x: clip; /* the pointer light may travel past the viewport edge */
+}
+
+/* --------------------------------------------------------------------------
+   Portrait + positioning
+   -------------------------------------------------------------------------- */
+.ab-main {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto auto 1fr;
+  column-gap: var(--gutter);
+}
+.ab-media {
+  grid-column: 1 / span 5;
+  grid-row: 1 / span 3;
+  align-self: start;
+}
+.ab-eyebrow {
+  grid-column: 7 / -1;
+  grid-row: 1;
+  justify-self: start;
+}
+.ab .ab-intro {
+  grid-column: 7 / -1;
+  grid-row: 2;
+  margin-top: clamp(32px, 3.6vw, 56px);
+  font-weight: 480;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.ab-goal {
+  grid-column: 7 / -1;
+  grid-row: 3;
+  align-self: start;
+  margin-top: clamp(56px, 7vw, 120px);
+}
+
+.ab-portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: clip;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+/* inner hairline — lives inside the clip so the reveal never pops it in */
+.ab-portrait::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+.ab-portrait__img {
+  position: absolute;
+  top: -12%;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: 124%; /* headroom for the ±8% parallax drift */
+  object-fit: cover;
+}
+html:not(.is-reduced) .ab-portrait__img {
+  will-change: transform; /* scrubbed parallax layer */
+}
+.ab-portrait__crop {
+  --cm-s: 14px;
+  --cm-c: rgba(255, 255, 255, 0.45);
+  position: absolute;
+  inset: clamp(12px, 1.4vw, 20px);
+  z-index: 1;
+  pointer-events: none;
+}
+.ab-portrait__tag {
+  position: absolute;
+  top: calc(clamp(12px, 1.4vw, 20px) + 14px);
+  left: calc(clamp(12px, 1.4vw, 20px) + 14px);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.78);
+}
+.ab-caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-top: 16px;
+  color: var(--fg-2);
+}
+.ab-caption__loc {
+  color: var(--fg-3);
+}
+
+@media (max-width: 899px) {
+  .ab-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+  .ab-media,
+  .ab-eyebrow,
+  .ab .ab-intro,
+  .ab-goal {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .ab-media {
+    width: 100%;
+    max-width: 520px;
+    margin-top: clamp(28px, 6vw, 44px);
+  }
+  .ab .ab-intro {
+    margin-top: clamp(44px, 10vw, 64px);
+  }
+  .ab-goal {
+    margin-top: clamp(48px, 11vw, 80px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Roles equation
+   -------------------------------------------------------------------------- */
+.ab-roles {
+  position: relative;
+  margin-top: clamp(120px, 18vh, 220px);
+  padding-block: clamp(24px, 3vw, 48px);
+}
+/* Oversized box with the light drawn in its centre. No CSS `translate` here:
+   GSAP folds it into x/y, and the pointer follow writes x/y directly. */
+.ab-roles__glow {
+  position: absolute;
+  inset: -70% -8%;
+  background: radial-gradient(
+    min(560px, 52vw) min(220px, 30vw) at 50% 50%,
+    var(--accent-glow),
+    var(--accent-soft) 46%,
+    rgba(255, 90, 31, 0) 100%
+  );
+  opacity: 0.42;
+  pointer-events: none;
+  transition: opacity 1.2s var(--ease-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-roles:hover .ab-roles__glow { opacity: 0.8; }
+  html:not(.is-reduced) .ab-roles__glow { will-change: transform; } /* follows the pointer */
+}
+
+.ab-eq {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px clamp(14px, 1.5vw, 24px);
+}
+.ab-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding-inline: clamp(22px, 2vw, 32px);
+  color: var(--fg);
+  white-space: nowrap;
+}
+.ab .ab-pill__txt {
+  position: relative;
+  font-weight: 500;
+  line-height: 1;
+}
+/* drawn "+" — crisp hairlines, optically centred between terms */
+.ab-eq__plus {
+  position: relative;
+  flex: none;
+  width: clamp(20px, 1.9vw, 30px);
+  aspect-ratio: 1;
+  color: var(--fg-3);
+}
+.ab-eq__plus::before,
+.ab-eq__plus::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 1px;
+  background: currentColor;
+  translate: -50% -50%;
+}
+.ab-eq__plus::before { width: 100%; height: 1.5px; }
+.ab-eq__plus::after { width: 1.5px; height: 100%; }
+
+.ab-eq__sum {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: clamp(28px, 3.4vw, 48px);
+  font-size: var(--fs-h4);
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  color: var(--fg-2);
+}
+.ab-eq__whole {
+  color: var(--fg);
+}
+.ab-eq__equals {
+  flex: none;
+  width: 18px;
+  height: 8px;
+  border-block: 1.5px solid var(--accent);
+}
+
+/* one line, spread to the container edges, once it fits */
+@media (min-width: 1280px) {
+  .ab-eq { justify-content: space-between; }
+}
+
+@media (max-width: 639px) {
+  .ab-eq {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .ab-pill {
+    height: 52px;
+  }
+  .ab-eq__plus {
+    align-self: center;
+    width: 16px;
+  }
+  .ab-eq__sum {
+    justify-content: center;
+    text-align: center;
+  }
+  .ab-roles__glow {
+    inset: -20% -8%;
+    background: radial-gradient(
+      62% 46% at 50% 50%,
+      var(--accent-glow),
+      var(--accent-soft) 46%,
+      rgba(255, 90, 31, 0) 100%
+    );
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Pillars
+   -------------------------------------------------------------------------- */
+.ab-pillars {
+  margin-top: clamp(104px, 15vh, 180px);
+}
+.ab-pillars__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(28px, 3.4vw, 48px);
+}
+.ab-pillars__title {
+  color: var(--fg-2);
+}
+.ab-pillars__aside {
+  color: var(--fg-3);
+}
+.ab-pillars__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(48px, 5.6vw, 88px) calc(var(--gutter) * 1.5);
+}
+.ab-pillar {
+  position: relative;
+  padding-top: clamp(20px, 2vw, 28px);
+}
+.ab-pillar__line,
+.ab-pillar__hl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+.ab-pillar__line {
+  background: var(--line-2);
+  transform-origin: 0 50%; /* draws left → right on reveal */
+}
+.ab-pillar__hl {
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 100% 50%; /* exits to the right… */
+  transition: transform 0.9s var(--ease-out);
+}
+.ab-pillar__body {
+  display: grid;
+  justify-items: start;
+}
+.ab-pillar__idx {
+  margin-bottom: clamp(22px, 2.8vw, 44px);
+  color: var(--fg-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.ab-pillar__desc {
+  max-width: 34ch;
+  margin-top: 10px;
+  text-wrap: pretty;
+  transition: color var(--dur-2) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ab-pillar:hover .ab-pillar__hl {
+    transform: scaleX(1);
+    transform-origin: 0% 50%; /* …after entering from the left */
+  }
+  .ab-pillar:hover .ab-pillar__idx { color: var(--accent); }
+  .ab-pillar:hover .ab-pillar__desc { color: var(--fg); }
+}
+
+@media (max-width: 1023px) {
+  .ab-pillars__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .ab-pillars__grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 40px;
+  }
+  .ab-pillar__idx { margin-bottom: 16px; }
+}

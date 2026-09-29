@@ -1,0 +1,112 @@
+.btn {
+  --btn-h: 54px;
+  --btn-icon: 38px;
+  --btn-pad: 26px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: var(--btn-h);
+  padding: 0 calc((var(--btn-h) - var(--btn-icon)) / 2) 0 var(--btn-pad);
+  border-radius: var(--r-pill);
+  font-size: 15px;
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  isolation: isolate;
+  transition: color var(--dur-2) var(--ease-out);
+}
+.btn--no-icon { padding-right: var(--btn-pad); }
+.btn--sm { --btn-h: 42px; --btn-icon: 30px; --btn-pad: 18px; font-size: 14px; }
+.btn--lg { --btn-h: 66px; --btn-icon: 50px; --btn-pad: 32px; font-size: 17px; }
+
+.btn__inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+.btn--sm .btn__inner { gap: 12px; }
+
+/* Rolling label */
+.btn__label { display: inline-block; overflow: clip; height: 1.25em; line-height: 1.25em; }
+.btn__roll { display: flex; flex-direction: column; transition: transform 0.7s var(--ease-out); }
+.btn__roll > span { display: block; height: 1.25em; }
+.btn:hover .btn__roll,
+.btn:focus-visible .btn__roll { transform: translateY(-50%); }
+.btn:hover .btn__roll--static,
+.btn:focus-visible .btn__roll--static { transform: none; }
+
+/* Icon with slide-through arrow */
+.btn__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--btn-icon);
+  height: var(--btn-icon);
+  border-radius: 50%;
+  overflow: clip;
+  flex: none;
+  transition: transform 0.7s var(--ease-out), background-color var(--dur-2) var(--ease-out);
+}
+.btn__icon-a,
+.btn__icon-b {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: transform 0.7s var(--ease-out);
+}
+.btn__icon-b { transform: translateX(-220%); }
+.btn:hover .btn__icon-a { transform: translateX(220%); }
+.btn:hover .btn__icon-b { transform: translateX(0); }
+
+/* Primary — warm white, accent flood from the icon on hover */
+.btn--primary { background: var(--fg); color: var(--ink); }
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  clip-path: circle(0% at calc(100% - var(--btn-h) / 2) 50%);
+  transition: clip-path 0.8s var(--ease-out);
+}
+.btn--primary:hover::before,
+.btn--primary:focus-visible::before { clip-path: circle(140% at calc(100% - var(--btn-h) / 2) 50%); }
+.btn--primary .btn__icon { background: var(--ink); color: var(--fg); }
+.btn--primary.btn--no-icon::before { clip-path: circle(0% at 50% 50%); }
+.btn--primary.btn--no-icon:hover::before { clip-path: circle(100% at 50% 50%); }
+
+/* Glass */
+.btn--glass { color: var(--fg); }
+.btn--glass .btn__icon { background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+.btn--glass:hover .btn__icon { background: var(--fg); color: var(--ink); }
+
+/* Ghost — inline text link with a drawing underline */
+.btn--ghost {
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  color: var(--fg);
+}
+.btn--ghost .btn__inner { gap: 10px; }
+.btn--ghost .btn__icon { --btn-icon: 22px; width: 22px; height: 22px; background: transparent; }
+.btn--ghost .btn__label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transform: scaleX(0.28);
+  opacity: 0.5;
+  transition: transform 0.7s var(--ease-out), opacity var(--dur-2);
+}
+.btn--ghost .btn__label { position: relative; overflow: visible; }
+.btn--ghost .btn__label .btn__roll { overflow: clip; height: 1.25em; }
+.btn--ghost:hover .btn__label::after { transform: scaleX(1); transform-origin: left; opacity: 1; }

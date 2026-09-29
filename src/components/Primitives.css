@@ -1,0 +1,48 @@
+/* Split reveal — hidden until split to avoid a flash of unsplit text */
+.split-reveal { visibility: hidden; }
+/* SplitText wraps each line in `<linesClass>-mask` (overflow: clip). Give
+   descenders and italic overhangs room so they don't get shaved. */
+.line-mask-inner-mask {
+  padding: 0 0.06em 0.14em;
+  margin: 0 -0.06em -0.14em;
+}
+
+/* Eyebrow */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--fg-3);
+}
+.eyebrow__idx { color: var(--accent); }
+.eyebrow__bar { width: 28px; height: 1px; background: var(--line-3); }
+.eyebrow__txt { color: var(--fg-2); }
+
+/* Section header */
+.sh { display: grid; gap: clamp(28px, 4vw, 56px); }
+.sh__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.sh__aside { text-align: right; }
+.sh__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--gutter) calc(var(--gutter) * 3);
+}
+.sh__title { max-width: 14ch; }
+.sh__lead { max-width: 42ch; justify-self: end; }
+@media (max-width: 900px) {
+  .sh__main { grid-template-columns: 1fr; }
+  .sh__lead { justify-self: start; }
+}
+
+/* Marquee */
+.mq { overflow: clip; width: 100%; }
+.mq__track { display: flex; width: max-content; will-change: transform; }
+.mq__half, .mq__item { display: flex; flex: none; }

@@ -1,0 +1,328 @@
+/* ==========================================================================
+   01 — Case hero + creative overview
+   Two columns ≥ 900 (copy | 9:16 master) · stacked below
+   ========================================================================== */
+.cs-hero {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  padding-top: calc(var(--nav-h) + 6vh);
+  padding-bottom: var(--section-y);
+}
+
+/* A faint wash of the project's colour across the top of the page */
+.cs-hero__wash {
+  z-index: -2;
+  top: -24vh;
+  right: -28vw;
+  width: min(1400px, 95vw);
+  aspect-ratio: 1;
+  opacity: 0.08;
+}
+
+/* --------------------------------------------------------------------------
+   Grid
+   -------------------------------------------------------------------------- */
+.cs-hero__grid {
+  /* the master fits the first screen with room left for the HUD below it */
+  --cs-vh: clamp(440px, calc(100svh - var(--nav-h) - 6vh - 128px), 760px);
+  --cs-vw: min(calc(var(--cs-vh) * 9 / 16), 42vw);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--cs-vw);
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas:
+    'crumbs media'
+    'head   media'
+    'lede   media'
+    'meta   media';
+  column-gap: clamp(40px, 6vw, 128px);
+}
+
+/* Breadcrumb */
+.cs-crumbs {
+  grid-area: crumbs;
+  margin-bottom: clamp(40px, 9vh, 112px);
+}
+.cs-crumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-3);
+}
+.cs-crumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.cs-crumbs__item + .cs-crumbs__item::before {
+  content: '/';
+  color: var(--fg-4);
+}
+.cs-crumbs__item[aria-current='page'] {
+  color: var(--fg-2);
+}
+.cs-crumbs__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-2);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.cs-crumbs__link::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 0.7s var(--ease-out);
+}
+.cs-crumbs__back {
+  display: inline-grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  scale: 0.78;
+  transition: translate 0.7s var(--ease-out);
+}
+.cs-crumbs__link:hover,
+.cs-crumbs__link:focus-visible {
+  color: var(--fg);
+}
+.cs-crumbs__link:hover::after,
+.cs-crumbs__link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+.cs-crumbs__link:hover .cs-crumbs__back {
+  translate: -4px 0;
+}
+
+/* Kicker + title */
+.cs-hero__head {
+  grid-area: head;
+  min-width: 0;
+}
+.cs-hero__kicker {
+  margin-bottom: clamp(16px, 2vw, 28px);
+}
+.cs-hero__title {
+  /* optical: the cap stem sits on the container edge, not the side bearing */
+  margin-left: -0.045em;
+}
+
+/* Summary */
+.cs-hero__summary {
+  grid-area: lede;
+  align-self: start;
+  max-width: 44ch;
+  margin-top: clamp(28px, 3.2vw, 48px);
+}
+
+/* --------------------------------------------------------------------------
+   The final ad
+   -------------------------------------------------------------------------- */
+.cs-hero__media {
+  grid-area: media;
+  position: relative;
+  align-self: start;
+  isolation: isolate;
+}
+.cs-hero__glow {
+  inset: -16% -72%;
+  opacity: 0.26;
+}
+.cs-hero__frame {
+  position: relative;
+  border-radius: var(--r-phone);
+}
+.cs-hero__frame .cs-hero__vv {
+  box-shadow:
+    0 0 0 1px var(--line-2),
+    0 60px 120px -48px rgba(0, 0, 0, 0.9);
+}
+.cs-hero__cue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  color: var(--fg-3);
+}
+.cs-hero__cue-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--fg-2);
+}
+.cs-hero__cue-icon {
+  flex: none;
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Meta grid — client · format · runtime · platforms
+   -------------------------------------------------------------------------- */
+.cs-meta {
+  grid-area: meta;
+  position: relative;
+  align-self: end;
+  margin-top: clamp(48px, 7vh, 88px);
+  padding-top: 22px;
+}
+.cs-meta__rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line-2);
+  transform-origin: 0 50%;
+}
+.cs-meta__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px var(--gutter);
+}
+.cs-meta__cell {
+  min-width: 0;
+}
+.cs-meta__k {
+  color: var(--fg-3);
+}
+.cs-meta__v {
+  margin-top: 10px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   Creative overview — what was made + figures
+   -------------------------------------------------------------------------- */
+.cs-ov {
+  margin-top: clamp(112px, 18vh, 220px);
+}
+.cs-ov__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 28px;
+  align-items: start;
+}
+.cs-ov__eyebrow {
+  grid-column: 1 / span 4;
+  /* sit on the first line of the paragraph */
+  padding-top: 0.7em;
+}
+.cs-ov__text {
+  grid-column: 5 / -1;
+  max-width: 29em;
+  font-weight: 440;
+  color: var(--fg);
+}
+
+.cs-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 44px var(--gutter);
+  margin-top: clamp(72px, 10vw, 160px);
+}
+.cs-stat {
+  position: relative;
+  min-width: 0;
+  padding-top: 20px;
+}
+.cs-stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line-2);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--cs-rule, 1));
+}
+.cs-stat__k {
+  color: var(--fg-3);
+}
+.cs-stat__v {
+  container-type: inline-size;
+  margin-top: clamp(14px, 1.6vw, 26px);
+  overflow: clip;
+  padding-bottom: 0.06em;
+  white-space: nowrap;
+}
+/* Full h1 size unless the value (its width in ems, --fit, set by CaseHero) would
+   crowd the next column — it may fill 86% of its own. Only the inner span
+   shrinks, so every figure in the row still sits on the same baseline. */
+.cs-stat__in {
+  display: inline-block;
+  font-size: min(1em, calc(86cqi / var(--fit, 0.01)));
+  letter-spacing: var(--ls-display); /* re-resolved at this size, so the em width holds */
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .cs-meta__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 899px) {
+  .cs-hero {
+    padding-top: calc(var(--nav-h) + 4vh);
+  }
+  .cs-hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      'crumbs'
+      'head'
+      'lede'
+      'media'
+      'meta';
+  }
+  .cs-crumbs {
+    margin-bottom: clamp(32px, 6vh, 56px);
+  }
+  .cs-hero__media {
+    justify-self: center;
+    width: min(88vw, 440px);
+    margin-top: clamp(40px, 9vw, 72px);
+  }
+  .cs-hero__glow {
+    inset: -10% -42%;
+  }
+  .cs-meta {
+    margin-top: clamp(40px, 8vw, 64px);
+  }
+  .cs-ov__eyebrow,
+  .cs-ov__text {
+    grid-column: 1 / -1;
+  }
+  .cs-ov__eyebrow {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 559px) {
+  .cs-meta__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .cs-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

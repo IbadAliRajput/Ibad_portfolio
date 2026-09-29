@@ -1,0 +1,1268 @@
+/* ==========================================================================
+   /work — All work index
+   Hero · sticky glass filter bar · grid / list (Flip) · CTA band · sheet
+   ========================================================================== */
+.wx {
+  --wx-stick: 16px;
+  --wx-bar-h: 56px;
+  --wx-mega: var(--fs-mega);
+  position: relative;
+  overflow-x: clip; /* clip (not hidden) keeps the filter bar sticky */
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+.wx-hero {
+  position: relative;
+  padding-top: calc(var(--nav-h) + 8vh);
+  padding-bottom: clamp(48px, 6.5vw, 104px);
+}
+.wx-hero__top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+}
+.wx-hero__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+  transform-origin: 0 50%;
+}
+.wx-hero__aside {
+  color: var(--fg-3);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.wx-hero__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  margin-top: clamp(36px, 5vw, 80px);
+}
+.wx-hero__title {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(8px, 0.9vw, 16px);
+}
+.wx .wx-hero__word {
+  display: block;
+  margin: 0;
+  font-size: var(--wx-mega);
+}
+/* Superscript count sits on the cap line of the mega type */
+.wx .wx-hero__count {
+  flex: none;
+  padding-top: calc(var(--wx-mega) * 0.11);
+  color: var(--accent);
+  font-size: clamp(0.8125rem, 1.15vw, 1.125rem);
+  letter-spacing: 0.04em;
+}
+.wx-hero__lead {
+  max-width: 44ch;
+  margin-top: clamp(24px, 3vw, 44px);
+  text-wrap: pretty;
+}
+
+/* Format legend — a mono meter per format; each row filters */
+.wx-legend {
+  display: none;
+}
+.wx-legend__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-2);
+  color: var(--fg-3);
+}
+.wx-legend__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(48px, 5vw, 80px) 2.4ch;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  line-height: 1.3;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-2) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.wx-legend__row:focus-visible {
+  outline-offset: 2px;
+}
+.wx-legend__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.wx-legend__name::before {
+  content: '';
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  transform: scale(0);
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.wx-legend__track {
+  position: relative;
+  height: 1px;
+  background: var(--line-2);
+}
+.wx-legend__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--fg-3);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--wx-n, 0));
+}
+.wx-legend__fill::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.wx-legend__n {
+  text-align: right;
+}
+.wx-legend__row.is-on {
+  color: var(--fg);
+}
+.wx-legend__row.is-on .wx-legend__name::before {
+  transform: scale(1);
+}
+.wx-legend__row.is-on .wx-legend__fill {
+  background: var(--accent);
+  color: var(--accent);
+}
+.wx-legend__row.is-on .wx-legend__fill::after {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .wx-legend__row:hover {
+    color: var(--fg);
+  }
+  .wx-legend__row:hover .wx-legend__name {
+    transform: translateX(6px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wx-hero__main {
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 21rem);
+    align-items: end;
+    column-gap: calc(var(--gutter) * 3);
+  }
+  .wx-legend {
+    display: block;
+  }
+}
+@media (max-width: 767px) {
+  .wx {
+    /* the headline stays the focal point on phones; capped so it meets the tablet size */
+    --wx-mega: clamp(var(--fs-mega), 21vw, 6.5rem);
+  }
+  .wx-hero__aside-x {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sticky filter bar
+   -------------------------------------------------------------------------- */
+.wx-index {
+  position: relative;
+  padding-bottom: clamp(128px, 14vw, 208px);
+}
+.wx-bar {
+  position: sticky;
+  top: var(--wx-stick);
+  z-index: calc(var(--z-nav) - 1);
+  pointer-events: none;
+}
+.wx-bar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wx-bar__row > * {
+  pointer-events: auto;
+}
+
+/* Glass tuned darker so labels hold over bright posters scrolling beneath */
+.wx .wx-pill,
+.wx .wx-view,
+.wx .wx-fbtn {
+  --glass-bg: rgba(0, 0, 0, 0.4);
+}
+
+.wx-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: var(--wx-bar-h);
+  padding: 0 6px;
+}
+.wx-pill__div {
+  flex: none;
+  width: 1px;
+  height: 22px;
+  margin: 0 4px;
+  background: var(--line-2);
+}
+
+/* Dropdown (combobox) */
+.wx-dd {
+  position: relative;
+}
+.wx-dd__btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 14px 0 18px;
+  border-radius: var(--r-pill);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 480;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--dur-2) var(--ease-out);
+}
+.wx-dd__btn:hover,
+.wx-dd.is-open .wx-dd__btn {
+  background: rgba(255, 255, 255, 0.07);
+}
+.wx-dd__btn:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--r-pill);
+}
+.wx-dd__label {
+  color: var(--fg-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.wx-dd.is-set .wx-dd__label {
+  color: var(--accent);
+}
+/* Fixed-width value: every option is stacked invisibly so the pill never resizes */
+.wx-dd__value {
+  display: grid;
+  height: 1.3em;
+  line-height: 1.3em;
+  overflow: clip;
+}
+.wx-dd__sizer,
+.wx-dd__cur {
+  grid-area: 1 / 1;
+}
+.wx-dd__sizer {
+  display: grid;
+  visibility: hidden;
+}
+.wx-dd__sizer > span {
+  grid-area: 1 / 1;
+}
+.wx-dd__chev {
+  flex: none;
+  color: var(--fg-3);
+  transition: transform 0.6s var(--ease-out), color var(--dur-2) var(--ease-out);
+}
+.wx-dd.is-open .wx-dd__chev {
+  transform: rotate(180deg);
+  color: var(--fg);
+}
+
+/* Popover */
+.wx .wx-dd__pop {
+  --glass-bg: rgba(0, 0, 0, 0.62);
+  position: absolute;
+  top: calc(100% + 14px);
+  left: -2px;
+  z-index: 5;
+  width: max-content;
+  min-width: calc(100% + 4px);
+  padding: 6px;
+  visibility: hidden;
+  transform-origin: 32px 0;
+}
+.wx-dd__list {
+  display: grid;
+  gap: 2px;
+}
+.wx-opt {
+  display: grid;
+  grid-template-columns: 7px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 224px;
+  height: 40px;
+  padding: 0 14px 0 13px;
+  border-radius: 14px;
+  color: var(--fg-2);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+.wx-opt.is-active {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--fg);
+}
+.wx-opt.is-selected {
+  color: var(--fg);
+}
+.wx-opt__mark {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--line-3);
+  transition: background-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.wx-opt.is-selected .wx-opt__mark {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.wx-opt__n {
+  color: var(--fg-3);
+}
+.wx-opt.is-empty:not(.is-selected) {
+  color: var(--fg-3);
+}
+.wx-opt.is-empty .wx-opt__n {
+  color: var(--fg-4);
+}
+
+/* Touch: Filters (n) */
+.wx-fbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--wx-bar-h);
+  padding: 0 20px 0 18px;
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+}
+.wx-fbtn__n {
+  color: var(--fg-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.wx-fbtn.is-set .wx-fbtn__n {
+  color: var(--accent);
+}
+
+/* Grid / List segmented toggle */
+.wx-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: var(--wx-bar-h);
+  padding: 6px;
+}
+.wx-view__thumb {
+  position: absolute;
+  z-index: 0;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc(50% - 6px);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  transition: transform 0.7s var(--ease-out);
+}
+.wx-view[data-view='list'] .wx-view__thumb {
+  transform: translateX(100%);
+}
+.wx-view__btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  color: var(--fg-3);
+  font-size: 13px;
+  font-weight: 480;
+  letter-spacing: -0.005em;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-2) var(--ease-out);
+}
+.wx-view__btn:hover,
+.wx-view__btn[aria-pressed='true'] {
+  color: var(--fg);
+}
+.wx-view__btn:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--r-pill);
+}
+
+@media (max-width: 1023px) {
+  .wx {
+    --wx-bar-h: 48px;
+  }
+  .wx-view {
+    padding: 5px;
+  }
+  .wx-view__thumb {
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    width: calc(50% - 5px);
+  }
+}
+@media (max-width: 479px) {
+  .wx-view__btn {
+    padding: 0 13px;
+  }
+  .wx-view__txt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Status row — count + removable chips
+   -------------------------------------------------------------------------- */
+.wx-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  min-height: 32px;
+  margin-top: clamp(28px, 3.2vw, 44px);
+}
+.wx-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  color: var(--fg-3);
+}
+.wx-count__mask {
+  display: inline-block;
+  height: 1.3em;
+  overflow: clip;
+}
+.wx-count__num {
+  display: inline-block;
+  color: var(--fg);
+}
+.wx-active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.wx .wx-chip {
+  gap: 8px;
+  height: 30px;
+  padding: 0 11px 0 12px;
+  border-color: var(--line-3);
+  color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+  animation: wx-chip-in 0.7s var(--ease-out) both;
+}
+.wx-chip__k {
+  color: var(--fg-3);
+}
+.wx .wx-chip:hover,
+.wx .wx-chip:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+@keyframes wx-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.wx-clear {
+  position: relative;
+  padding: 6px 2px;
+  color: var(--fg-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.wx-clear::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.3);
+  transform-origin: 0 50%;
+  opacity: 0.6;
+  transition: transform 0.7s var(--ease-out);
+}
+.wx-clear:hover,
+.wx-clear:focus-visible {
+  color: var(--fg);
+}
+.wx-clear:hover::after,
+.wx-clear:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* --------------------------------------------------------------------------
+   Results container (height eased during Flip)
+   -------------------------------------------------------------------------- */
+.wx-results {
+  position: relative;
+  margin-top: clamp(28px, 3.4vw, 48px);
+}
+.wx-item.is-out,
+.wx-row.is-out {
+  display: none;
+}
+
+/* Grid ------------------------------------------------------------------- */
+.wx-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: clamp(36px, 3.4vw, 56px);
+}
+/* Three up from small landscape tablets, so a 9:16 card never outgrows the viewport */
+@media (min-width: 900px) {
+  .wx-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .wx-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.wx-card {
+  display: block;
+  color: var(--fg);
+  scroll-margin: 150px 0 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wx-card:focus-visible {
+  outline: none;
+}
+.wx-card__media {
+  position: relative;
+  border-radius: var(--r-phone);
+  outline: 1px solid transparent;
+  outline-offset: 5px;
+  transition: outline-color var(--dur-3) var(--ease-out), outline-offset var(--dur-3) var(--ease-out);
+}
+.wx-card:focus-visible .wx-card__media {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 6px;
+}
+.wx-card__info {
+  margin-top: clamp(14px, 1.3vw, 20px);
+}
+.wx-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wx-card__title {
+  min-width: 0;
+  transition: color var(--dur-2) var(--ease-out);
+}
+/* Index rolls into an arrow on hover — the button language, in miniature */
+.wx-card__idx {
+  flex: none;
+  display: inline-block;
+  height: 1.3em;
+  margin-top: calc((var(--fs-h4) * 1.25 - var(--fs-micro) * 1.3) / 2);
+  overflow: clip;
+  color: var(--fg-3);
+}
+.wx-card__roll {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.7s var(--ease-out);
+}
+.wx-card__roll > span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 1.3em;
+}
+.wx-card__roll svg {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+}
+.wx-card:focus-visible .wx-card__roll {
+  transform: translateY(-50%);
+}
+.wx-card__kicker {
+  margin-top: 4px;
+}
+.wx-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.wx .wx-card__chip {
+  height: 24px;
+  padding: 0 10px;
+  transition: border-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+}
+.wx .wx-card__chip.is-hl {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .wx-card:hover .wx-card__media {
+    outline-color: var(--line-3);
+  }
+  .wx-card:hover .wx-card__roll {
+    transform: translateY(-50%);
+  }
+}
+@media (max-width: 767px) {
+  .wx-card__head {
+    gap: 8px;
+  }
+  .wx .wx-card__chip {
+    height: 22px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+}
+
+/* List ------------------------------------------------------------------- */
+.wx-list {
+  --wx-cols: 4.5rem minmax(0, 1fr) minmax(0, 10rem) minmax(0, 15rem) 4.75rem 3.75rem 44px;
+  position: relative;
+}
+.wx-list__head {
+  display: grid;
+  grid-template-columns: var(--wx-cols);
+  column-gap: var(--gutter);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-2);
+  color: var(--fg-3);
+}
+.wx-rows {
+  position: relative;
+}
+.wx-row {
+  position: relative;
+}
+.wx-row__link {
+  position: relative;
+  display: block;
+  color: var(--fg);
+  scroll-margin: 150px 0 48px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--dur-3) var(--ease-out);
+}
+.wx-row__link:focus-visible {
+  outline-offset: -1px;
+  border-radius: var(--r-xs);
+}
+.wx-row__in {
+  display: grid;
+  grid-template-columns: var(--wx-cols);
+  align-items: center;
+  column-gap: var(--gutter);
+  padding-block: clamp(20px, 2.2vw, 34px);
+}
+.wx-row__idx {
+  color: var(--accent);
+}
+.wx-row__thumb {
+  position: relative;
+  display: none;
+  aspect-ratio: 9 / 16;
+  overflow: clip;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.wx-row__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wx-row__main {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.wx-row__title {
+  display: block;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.wx-row__sub {
+  display: none;
+  color: var(--fg-3);
+}
+.wx-row__fmt,
+.wx-row__rt,
+.wx-row__yr {
+  color: var(--fg-2);
+}
+.wx-row__styles {
+  color: var(--fg-3);
+}
+.wx-row__style {
+  transition: color var(--dur-2) var(--ease-out);
+}
+.wx-row__style + .wx-row__style::before {
+  content: '·';
+  margin: 0 0.55em;
+  color: var(--fg-4);
+}
+.wx-row__style.is-hl {
+  color: var(--fg);
+}
+.wx-row__arrow {
+  position: relative;
+  justify-self: end;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  overflow: clip;
+  transition: background-color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+}
+.wx-row__arrow-a,
+.wx-row__arrow-b {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: transform 0.7s var(--ease-out);
+}
+.wx-row__arrow-b {
+  transform: translateX(-220%);
+}
+.wx-row__rule,
+.wx-row__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  pointer-events: none;
+}
+.wx-row__rule {
+  background: var(--line-2);
+  transform-origin: 0 50%;
+}
+.wx-row__line {
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 0.9s var(--ease-out);
+}
+/* Keyboard mirrors hover */
+.wx-row__link:focus-visible .wx-row__title {
+  transform: translateX(20px);
+}
+.wx-row__link:focus-visible .wx-row__line {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+.wx-row__link:focus-visible .wx-row__arrow {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--ink);
+}
+.wx-row__link:focus-visible .wx-row__arrow-a {
+  transform: translateX(220%);
+}
+.wx-row__link:focus-visible .wx-row__arrow-b {
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .wx-rows:hover .wx-row__link:not(:hover) {
+    opacity: 0.35;
+  }
+  .wx-row__link:hover .wx-row__title {
+    transform: translateX(20px);
+  }
+  .wx-row__link:hover .wx-row__style {
+    color: var(--fg-2);
+  }
+  .wx-row__link:hover .wx-row__style.is-hl {
+    color: var(--fg);
+  }
+  .wx-row__link:hover .wx-row__line {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+  .wx-row__link:hover .wx-row__arrow {
+    background: var(--fg);
+    border-color: var(--fg);
+    color: var(--ink);
+  }
+  .wx-row__link:hover .wx-row__arrow-a {
+    transform: translateX(220%);
+  }
+  .wx-row__link:hover .wx-row__arrow-b {
+    transform: none;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .wx-list {
+    --wx-cols: 3.5rem minmax(0, 1fr) minmax(0, 8.5rem) minmax(0, 12rem) 4rem 3.5rem 44px;
+  }
+}
+/* Wide touch screens get no cursor preview, so the row keeps its thumbnail */
+@media (min-width: 1024px) {
+  .wx-list:not(.has-preview) {
+    --wx-cols: 4.5rem 2.75rem minmax(0, 1fr) minmax(0, 10rem) minmax(0, 15rem) 4.75rem 3.75rem 44px;
+  }
+  .wx-list:not(.has-preview) .wx-row__thumb {
+    display: block;
+    border-radius: var(--r-xs);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .wx-list:not(.has-preview) {
+    --wx-cols: 3.5rem 2.5rem minmax(0, 1fr) minmax(0, 8.5rem) minmax(0, 12rem) 4rem 3.5rem 44px;
+  }
+}
+/* Tablet / phone: a thumbnail replaces the hover preview */
+@media (max-width: 1023px) {
+  .wx-list {
+    --wx-cols: clamp(52px, 11vw, 76px) minmax(0, 1fr) 40px;
+  }
+  .wx-list__head {
+    display: none;
+  }
+  .wx-rows {
+    border-top: 1px solid var(--line-2);
+  }
+  .wx-row__idx,
+  .wx-row__fmt,
+  .wx-row__styles,
+  .wx-row__rt,
+  .wx-row__yr {
+    display: none;
+  }
+  .wx-row__in {
+    padding-block: 16px;
+  }
+  .wx-row__thumb {
+    display: block;
+  }
+  .wx-row__sub {
+    display: block;
+  }
+  .wx-row__arrow {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Floating preview (list, desktop + fine pointer) ------------------------ */
+.wx-preview {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: clamp(200px, 15vw, 260px);
+  pointer-events: none;
+  will-change: transform;
+}
+.wx-preview__frame {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: clip;
+  border-radius: var(--r-phone);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line-2), 0 40px 90px -30px rgba(0, 0, 0, 0.85);
+  visibility: hidden;
+  isolation: isolate;
+}
+.wx-shot {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  clip-path: inset(100% 0% 0% 0%);
+}
+.wx-shot__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wx-shot__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0) 26%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 46%);
+}
+.wx-shot__crop {
+  position: absolute;
+  inset: 12px;
+  --cm-s: 12px;
+  --cm-c: rgba(255, 255, 255, 0.5);
+}
+.wx-shot__top {
+  position: absolute;
+  top: 20px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 10px;
+}
+.wx-shot__idx {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.wx-shot__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.wx .wx-shot__cap {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  bottom: 12%;
+  font-size: 16px;
+}
+
+/* Empty state ------------------------------------------------------------ */
+.wx-empty {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  padding-block: clamp(16px, 3vw, 48px);
+}
+.wx-empty__frame {
+  --cm-c: rgba(255, 255, 255, 0.4);
+  --cm-s: 12px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(112px, 12vw, 168px);
+  aspect-ratio: 9 / 16;
+  border-radius: var(--r-md);
+  background-color: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.wx-empty__rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-3);
+}
+.wx-empty__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fg-4);
+}
+.wx-empty__tc {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  text-align: center;
+  color: var(--fg-4);
+}
+.wx-empty__body {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  gap: 14px;
+  max-width: 40ch;
+}
+.wx-empty__title {
+  text-wrap: balance;
+}
+.wx-empty__hint {
+  margin-bottom: 10px;
+}
+@media (min-width: 768px) {
+  .wx-empty {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 4vw, 72px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   CTA band
+   -------------------------------------------------------------------------- */
+.wx-cta {
+  position: relative;
+  padding-block: clamp(96px, 12vw, 176px);
+  border-top: 1px solid var(--line);
+}
+.wx-cta__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(32px, 4vw, 56px);
+}
+.wx-cta__main {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+}
+.wx-cta__title {
+  max-width: 11ch;
+}
+.wx-cta__side {
+  display: grid;
+  justify-items: start;
+  gap: clamp(28px, 3vw, 40px);
+  max-width: 42ch;
+}
+.wx-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 28px;
+}
+.wx-cta__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-3);
+}
+@media (min-width: 1024px) {
+  .wx-cta__grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: end;
+    column-gap: calc(var(--gutter) * 3);
+  }
+  .wx-cta__side {
+    justify-self: end;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Filter sheet (portal → body, so selectors stay rooted at .wx-sheet)
+   -------------------------------------------------------------------------- */
+.wx-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.wx-sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+.wx-sheet .wx-sheet__panel {
+  --glass-bg: rgba(0, 0, 0, 0.58);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: min(88svh, 760px);
+}
+.wx-sheet .wx-sheet__panel:focus-visible {
+  outline: none;
+}
+.wx-sheet__head {
+  flex: none;
+  padding: 10px var(--pad) 0;
+  touch-action: none;
+  cursor: grab;
+}
+.wx-sheet__grab {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0 auto 14px;
+  border-radius: 4px;
+  background: var(--line-3);
+}
+.wx-sheet__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.wx-sheet__tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wx-sheet__reset {
+  padding: 10px 8px;
+  color: var(--fg-2);
+  transition: color var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out);
+}
+.wx-sheet__reset[aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: default;
+}
+.wx-sheet__close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+}
+.wx-sheet__close:focus-visible {
+  border-radius: 50%;
+}
+.wx-sheet__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px var(--pad) 28px;
+}
+.wx-sheet__group {
+  padding-top: 24px;
+}
+.wx-sheet__label {
+  margin-bottom: 12px;
+  color: var(--fg-3);
+}
+.wx-sheet__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.wx-schip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 40px;
+  padding: 0 14px 0 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--fg-2);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+}
+.wx-schip__n {
+  color: var(--fg-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.wx-schip.is-on {
+  background: var(--fg);
+  border-color: transparent;
+  color: var(--ink);
+}
+.wx-schip.is-on .wx-schip__n {
+  color: rgba(0, 0, 0, 0.5);
+}
+.wx-schip:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .wx-schip:not(:disabled):not(.is-on):hover {
+    border-color: var(--line-3);
+    color: var(--fg);
+  }
+  .wx-sheet__reset:not([aria-disabled='true']):hover {
+    color: var(--fg);
+  }
+  .wx-sheet__close:hover {
+    border-color: var(--fg-3);
+  }
+}
+.wx-schip:focus-visible {
+  border-radius: var(--r-pill);
+}
+.wx-sheet__foot {
+  flex: none;
+  display: flex;
+  padding: 14px var(--pad) max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+.wx-sheet .wx-sheet__show {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+.wx-sheet .wx-sheet__show:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Honour reduced transparency over the local glass tints above */
+@media (prefers-reduced-transparency: reduce) {
+  .wx .wx-pill,
+  .wx .wx-view,
+  .wx .wx-fbtn,
+  .wx .wx-dd__pop,
+  .wx-sheet .wx-sheet__panel {
+    --glass-bg: rgba(0, 0, 0, 0.92);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — hover/colour transitions stay, autonomous motion goes
+   -------------------------------------------------------------------------- */
+html.is-reduced .wx .wx-chip {
+  animation: none;
+}
+html.is-reduced .wx-preview {
+  will-change: auto;
+}

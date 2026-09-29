@@ -1,0 +1,617 @@
+/* ==========================================================================
+   Case study · 02 — The hook (pinned scrub)                        prefix: hs-
+   ========================================================================== */
+.hs {
+  --hs-tone: var(--accent);
+  --hs-ruler-h: 32px;
+  --hs-ruler-gap: clamp(20px, 2.6vh, 28px);
+  --hs-bottom: 64px; /* clear of the desktop HUD */
+  position: relative;
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   Desktop stage (≥1024) — the whole composition pins
+   -------------------------------------------------------------------------- */
+.hs-pin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  min-height: 640px;
+  padding: calc(var(--nav-h) + 2vh) 0 var(--hs-bottom);
+  overflow: clip;
+  background:
+    radial-gradient(38% 58% at 20% 52%, color-mix(in srgb, var(--hs-tone) 12%, transparent), transparent 72%),
+    radial-gradient(40% 50% at 78% 30%, rgba(255, 255, 255, 0.025), transparent 70%),
+    var(--bg);
+}
+@supports (height: 100svh) {
+  .hs-pin { height: 100svh; }
+}
+
+.hs-grid {
+  /* 76vh, but never taller than the stage allows, and never wider than 36vw (tall/narrow screens) */
+  --hs-ph: min(76vh, calc(100vh - var(--nav-h) - 2vh - var(--hs-bottom) - var(--hs-ruler-h) - var(--hs-ruler-gap) - 8px), 64vw, 900px);
+  --hs-pw: calc(var(--hs-ph) * 9 / 16);
+  display: grid;
+  grid-template-columns: calc(var(--hs-pw) + 28px) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'media head'
+    'media points';
+  column-gap: clamp(56px, 8vw, 160px);
+}
+@supports (height: 100svh) {
+  .hs-grid {
+    --hs-ph: min(76svh, calc(100svh - var(--nav-h) - 2svh - var(--hs-bottom) - var(--hs-ruler-h) - var(--hs-ruler-gap) - 8px), 64vw, 900px);
+  }
+}
+
+/* the stage wrapper only exists as a box on mobile (it's the mobile pin) */
+.hs-stage { display: contents; }
+
+/* --------------------------------------------------------------------------
+   Copy column
+   -------------------------------------------------------------------------- */
+.hs-head {
+  grid-area: head;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: clamp(18px, 2.6vh, 32px);
+  min-width: 0;
+}
+
+.hs-line {
+  --hs-line-fs: min(var(--fs-h2), 5.4vh);
+  position: relative;
+  max-width: 100%;
+}
+@supports (height: 1svh) {
+  .hs-line { --hs-line-fs: min(var(--fs-h2), 5.4svh); }
+}
+.hs-line .hs-line__text,
+.hs-line .hs-line__mark {
+  font-size: var(--hs-line-fs);
+}
+.hs-line__text {
+  max-width: 20ch;
+}
+/* hanging open-quote: the text block stays optically flush with the eyebrow */
+.hs-line__mark {
+  position: absolute;
+  top: 0;
+  left: -0.46em;
+  line-height: var(--lh-snug);
+  color: var(--fg-3);
+  pointer-events: none;
+}
+
+.hs-window {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6em;
+  color: var(--fg-2);
+}
+.hs-window__k { color: var(--fg-3); }
+
+/* --------------------------------------------------------------------------
+   Points
+   -------------------------------------------------------------------------- */
+.hs-points-wrap {
+  grid-area: points;
+  align-self: end;
+  width: 100%;
+  max-width: 720px;
+  min-width: 0;
+  /* last row lines up with the bottom edge of the phone, not the ruler */
+  margin-bottom: calc(var(--hs-ruler-h) + var(--hs-ruler-gap));
+  padding-top: clamp(28px, 4vh, 48px);
+}
+.hs-points {
+  display: grid;
+  border-bottom: 1px solid var(--line);
+}
+.hs-pt {
+  position: relative;
+  border-top: 1px solid var(--line);
+}
+.hs-pt__in {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.38fr) minmax(0, 1fr);
+  column-gap: var(--gutter);
+  row-gap: 6px;
+  align-items: baseline;
+  width: 100%;
+  padding: clamp(11px, 1.7vh, 17px) 0 clamp(11px, 1.7vh, 17px) 22px;
+  text-align: left;
+  color: var(--fg-4);
+  transition: color 0.5s var(--ease-out);
+}
+.hs-pt__in--btn {
+  cursor: pointer;
+  border-radius: 0;
+}
+.hs-pt__in--btn:focus-visible {
+  outline-offset: -1px;
+  border-radius: var(--r-xs);
+}
+.hs-pt__bar {
+  position: absolute;
+  left: 0;
+  top: clamp(11px, 1.7vh, 17px);
+  bottom: clamp(11px, 1.7vh, 17px);
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 0.6s var(--ease-out);
+}
+.hs-pt__k {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: inherit;
+  transition: color 0.5s var(--ease-out);
+}
+.hs-pt__n { color: inherit; }
+.hs-pt__v {
+  font-size: clamp(0.9375rem, 1vw, 1.0625rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.hs-pt.is-active .hs-pt__in { color: var(--fg); }
+.hs-pt.is-active .hs-pt__k { color: var(--accent); }
+.hs-pt.is-active .hs-pt__bar { transform: scaleY(1); }
+
+@media (hover: hover) and (pointer: fine) {
+  .hs-pt:not(.is-active) .hs-pt__in--btn:hover { color: var(--fg-3); }
+}
+
+.hs-dots { display: none; }
+
+/* --------------------------------------------------------------------------
+   The phone
+   -------------------------------------------------------------------------- */
+.hs-media {
+  grid-area: media;
+  align-self: center;
+  width: calc(var(--hs-pw) + 28px);
+  padding-inline: 14px; /* room for the crop marks */
+}
+.hs-phone {
+  position: relative;
+  width: var(--hs-pw);
+  height: var(--hs-ph);
+  container-type: inline-size;
+}
+.hs-phone__screen {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: 7.6cqw;
+  background: #000;
+  isolation: isolate;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 70px 130px -44px rgba(0, 0, 0, 0.92),
+    0 0 150px -34px color-mix(in srgb, var(--hs-tone) 42%, transparent);
+}
+.hs-phone__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hs-phone__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 22%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 48%);
+}
+.hs-phone__crop {
+  --cm-s: 16px;
+  --cm-c: rgba(255, 255, 255, 0.34);
+  position: absolute;
+  inset: -14px;
+  pointer-events: none;
+}
+
+/* overlay — sized in cqw so it scales with the phone */
+.hs-phone__ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hs-phone__prog {
+  position: absolute;
+  top: 3.4cqw;
+  left: 4cqw;
+  right: 4cqw;
+  display: flex;
+  gap: 1.2cqw;
+}
+.hs-seg {
+  position: relative;
+  flex: 1 1 0;
+  height: max(2px, 0.55cqw);
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.26);
+}
+.hs-seg__fill {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.hs-phone__top {
+  position: absolute;
+  top: 7.2cqw;
+  left: 4cqw;
+  right: 4cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqw;
+}
+.hs-phone .hs-phone__chip {
+  display: inline-flex;
+  align-items: center;
+  height: 7.6cqw;
+  padding: 0 3cqw;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--r-pill);
+  background: rgba(0, 0, 0, 0.34);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 2.8cqw;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.hs-phone__rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 2cqw;
+  height: 7.6cqw;
+  padding: 0 3.2cqw;
+}
+.hs-phone__rec .hs-phone__dot {
+  width: 1.7cqw;
+  height: 1.7cqw;
+}
+.hs-phone .hs-tc {
+  min-width: 11ch;
+  font-size: 2.8cqw;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+}
+
+/* burned-in caption — words land progressively with the scrub */
+.hs-cap {
+  position: absolute;
+  top: 57%;
+  left: 7%;
+  right: 7%;
+  font-family: var(--font-sans);
+  font-weight: 750;
+  font-size: 7cqw;
+  line-height: 1.26;
+  letter-spacing: -0.025em;
+  text-align: center;
+  text-wrap: balance;
+  color: #fff;
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.55);
+}
+.hs-w {
+  display: inline-block;
+  margin: 0 0.13em;
+  opacity: 0;
+  transform: translateY(0.34em) scale(0.9);
+  transition:
+    opacity 0.16s ease-out,
+    transform 0.4s var(--ease-out);
+}
+.hs-w.is-on {
+  opacity: 1;
+  transform: none;
+}
+/* the payoff phrase: the highlight box wipes in and extends word by word */
+.hs-w.is-hl {
+  padding: 0.02em 0.2em 0.06em;
+  border-radius: 0.18em;
+  background: var(--accent);
+  color: var(--ink);
+  text-shadow: none;
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.3s var(--ease-out);
+}
+.hs-w.is-hl.is-on { clip-path: inset(0 0 0 0); }
+.hs-w.is-hl:has(+ .hs-w.is-hl) {
+  margin-right: 0;
+  padding-right: 0.13em;
+}
+.hs-w.is-hl + .hs-w.is-hl {
+  margin-left: 0;
+  padding-left: 0.13em;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.hs-w.is-hl.is-on:has(+ .hs-w.is-hl.is-on) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Mini ruler under the phone
+   -------------------------------------------------------------------------- */
+.hs-ruler {
+  position: relative;
+  width: var(--hs-pw);
+  height: var(--hs-ruler-h);
+  margin-top: var(--hs-ruler-gap);
+}
+.hs-ruler__scale {
+  position: relative;
+  height: 12px;
+  border-bottom: 1px solid var(--line-2);
+}
+.hs-ruler__win {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 90, 31, 0), var(--accent-soft));
+  transform: scaleX(var(--hs-win, 1));
+  transform-origin: 0 50%;
+}
+.hs-ruler__tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 4px;
+  background: var(--line-3);
+}
+.hs-ruler__tick.is-major {
+  height: 9px;
+  background: var(--fg-3);
+}
+.hs-ruler__ph {
+  position: absolute;
+  top: -5px;
+  bottom: -1px;
+  left: 0;
+  width: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  will-change: transform;
+}
+.hs-ruler__ph::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3.5px;
+  width: 8px;
+  height: 6px;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.hs-ruler__labels {
+  position: relative;
+  height: 14px;
+  margin-top: 6px;
+}
+.hs-ruler__lbl {
+  position: absolute;
+  top: 0;
+  translate: -50% 0;
+  font-size: 10px;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.hs-ruler__lbl.is-first { translate: 0 0; }
+.hs-ruler__lbl.is-last { translate: -100% 0; }
+
+/* --------------------------------------------------------------------------
+   Desktop fine-tuning
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .hs-pt__in { grid-template-columns: minmax(8.5rem, 0.36fr) minmax(0, 1fr); }
+  .hs-pt__v { font-size: 0.9375rem; }
+}
+/* laptop viewports (e.g. 1366×657, 1280×720): tighter rhythm so nothing crowds the nav or HUD */
+@media (min-width: 1024px) and (max-height: 780px) {
+  .hs-head { gap: 16px; }
+  .hs-points-wrap {
+    margin-bottom: 0;
+    padding-top: 20px;
+  }
+  .hs-pt__in { padding-block: 9px; }
+  .hs-pt__bar { top: 9px; bottom: 9px; }
+  .hs-pt__v { font-size: 0.875rem; line-height: 1.4; }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet & mobile (<1024) — header scrolls in, then the phone stack pins
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .hs-pin {
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+    background: none;
+  }
+  .hs-grid {
+    /* ~58vh, minus what the stack below needs: ruler 42 + point 105 + dots 34 + padding 26 + slack */
+    --hs-ph: max(240px, min(58vh, calc(100vh - var(--nav-h) - 216px), 680px));
+    display: block;
+  }
+  @supports (height: 100svh) {
+    .hs-grid { --hs-ph: max(240px, min(58svh, calc(100svh - var(--nav-h) - 216px), 680px)); }
+  }
+
+  .hs-head {
+    gap: 22px;
+    padding-top: clamp(96px, 15vh, 168px);
+    padding-bottom: clamp(8px, 2vh, 24px);
+  }
+  .hs-line { --hs-line-fs: var(--fs-h2); }
+  .hs-line__text { max-width: 22ch; }
+
+  .hs-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: calc(var(--nav-h) + 4px) 0 max(18px, env(safe-area-inset-bottom));
+    overflow: clip;
+    background: radial-gradient(56% 42% at 50% 40%, color-mix(in srgb, var(--hs-tone) 12%, transparent), transparent 74%);
+  }
+  @supports (height: 100svh) {
+    .hs-stage { height: 100svh; }
+  }
+
+  .hs-media {
+    align-self: center;
+    width: auto;
+    padding-inline: 0;
+  }
+  .hs-ruler {
+    --hs-ruler-h: 28px;
+    --hs-ruler-gap: 14px;
+  }
+  .hs-ruler__labels { margin-top: 4px; }
+
+  .hs-points-wrap {
+    align-self: center;
+    width: 100%;
+    max-width: 480px;
+    margin: 18px 0 0;
+    padding-top: 0;
+  }
+  .hs-points {
+    border-bottom: 0;
+  }
+  /* one point at a time: the outgoing line leaves fast, the next one settles in */
+  .hs-pt {
+    grid-area: 1 / 1;
+    border-top: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.24s ease-out,
+      transform 0.3s ease-out;
+  }
+  .hs-pt.is-shown {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.5s var(--ease-out) 0.16s,
+      transform 0.8s var(--ease-out) 0.16s;
+  }
+  .hs-pt__in {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 8px;
+    padding: 1px 0 1px 16px;
+  }
+  .hs-pt__bar {
+    top: 2px;
+    bottom: 2px;
+  }
+  .hs-pt__v {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+  /* before the first beat the opening point waits, readable but unlit */
+  .hs-pt.is-shown:not(.is-active) .hs-pt__in { color: var(--fg-3); }
+
+  .hs-dots {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 10px;
+  }
+  .hs-dot {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 24px;
+    border-radius: var(--r-pill);
+  }
+  .hs-dot__bar {
+    width: 18px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--fg-4);
+    transform: scaleX(0.34);
+    transition:
+      transform 0.6s var(--ease-out),
+      background-color 0.4s var(--ease-out);
+  }
+  .hs-dot.is-done .hs-dot__bar { background: var(--fg-3); }
+  .hs-dot.is-active .hs-dot__bar {
+    background: var(--accent);
+    transform: none;
+  }
+}
+
+/* Phones held sideways — not enough height to stack, so phone and point sit side by side */
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 600px) {
+  .hs-grid { --hs-ph: max(180px, calc(100vh - var(--nav-h) - 140px)); }
+  @supports (height: 100svh) {
+    .hs-grid { --hs-ph: max(180px, calc(100svh - var(--nav-h) - 140px)); }
+  }
+  .hs-stage {
+    flex-direction: row;
+    gap: clamp(28px, 6vw, 64px);
+  }
+  .hs-points-wrap {
+    max-width: 360px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  /* no gutter to hang the quote into — it sits inline and the text indents */
+  .hs-line {
+    display: flex;
+    align-items: flex-start;
+  }
+  .hs-line__mark {
+    position: static;
+    flex: none;
+    width: 0.46em;
+  }
+  .hs-line__text { min-width: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — scrub stays, flourishes go
+   -------------------------------------------------------------------------- */
+html.is-reduced .hs-w {
+  transform: none;
+  transition: opacity 0.15s linear;
+}
+html.is-reduced .hs-w.is-hl {
+  clip-path: none;
+  opacity: 0;
+}
+html.is-reduced .hs-w.is-hl.is-on { opacity: 1; }
+html.is-reduced .hs-pt,
+html.is-reduced .hs-pt.is-shown {
+  transform: none;
+}

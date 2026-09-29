@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Case study — page shell + helpers shared by the src/case/* sections
+   (every section's own styles live beside it: src/case/Case*.css)
+   ========================================================================== */
+.cs {
+  position: relative;
+}
+
+/* Section top row: eyebrow left, mono aside right, hairline beneath */
+.cs-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.cs-top__aside {
+  text-align: right;
+}
+
+/* Inline mask for yPercent reveals (room for descenders) */
+.cs-mask {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.cs-mask > span {
+  display: inline-block;
+}
+
+/* Soft ambient glow in the project's colour (--cs-glow-c overrides it).
+   An eased, gaussian-like falloff reads as a blurred light without paying for
+   a filter on a large layer that GSAP scales during intros. */
+.cs-glow {
+  --cs-glow-c: var(--cs-tone);
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--cs-glow-c), transparent);
+  background: radial-gradient(
+    closest-side,
+    var(--cs-glow-c) 0%,
+    color-mix(in srgb, var(--cs-glow-c) 62%, transparent) 28%,
+    color-mix(in srgb, var(--cs-glow-c) 26%, transparent) 56%,
+    color-mix(in srgb, var(--cs-glow-c) 7%, transparent) 80%,
+    transparent 100%
+  );
+}
+
+/* "A → B" arrows inside running copy */
+.cs-arrow {
+  color: var(--accent);
+}
+
+/* Keyboard hint keys */
+.cs-kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 5px;
+  border: 1px solid var(--line-2);
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+}

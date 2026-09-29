@@ -1,0 +1,42 @@
+.pt {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-transition);
+  visibility: hidden;
+  pointer-events: none;
+}
+.pt__panel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bg-2);
+  clip-path: inset(100% 0% 0% 0%);
+}
+.pt__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  overflow: clip;
+  text-align: center;
+  padding-inline: var(--pad);
+}
+.pt__meta > * { display: inline-flex; align-items: center; gap: 10px; }
+.pt__title { max-width: 16ch; }
+.pt__title:empty { display: none; }
+.pt__track {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: clamp(28px, 6vh, 64px);
+  height: 1px;
+  background: var(--line);
+}
+.pt__bar {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left center;
+  transform: scaleX(0);
+}

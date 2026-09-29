@@ -1,0 +1,37 @@
+.shots {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.shots > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  will-change: transform;
+}
+.shots > img.is-on { opacity: 1; }
+/* one-frame white flash on each hard cut, like a flash-frame in the edit */
+.shots::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+.shots.is-cut-a::after { animation: shot-flash-a 0.22s ease-out; }
+.shots.is-cut-b::after { animation: shot-flash-b 0.22s ease-out; }
+@keyframes shot-flash-a {
+  0% { opacity: 0.16; }
+  100% { opacity: 0; }
+}
+@keyframes shot-flash-b {
+  0% { opacity: 0.16; }
+  100% { opacity: 0; }
+}
+html.is-reduced .shots::after { animation: none !important; }

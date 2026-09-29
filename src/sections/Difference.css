@@ -1,0 +1,778 @@
+/* ==========================================================================
+   05 — The Difference
+   Core statement · two editors as two timeline tracks · philosophy ticker
+   ========================================================================== */
+.df {
+  position: relative;
+  padding-block: var(--section-y);
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   Intro — the core message, centred
+   -------------------------------------------------------------------------- */
+.df-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.df-title {
+  margin-top: clamp(28px, 3.4vw, 56px);
+}
+/* italic overhang room so the final glyph isn't shaved by the line mask */
+.df-title em {
+  padding-right: 0.04em;
+}
+.df-lead {
+  max-width: 46ch;
+  margin-top: clamp(24px, 2.6vw, 40px);
+}
+
+/* --------------------------------------------------------------------------
+   Stage (pinned on desktop)
+   -------------------------------------------------------------------------- */
+.df-pin {
+  position: relative;
+  margin-top: clamp(72px, 13vw, 128px);
+}
+
+.df-stage__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(16px, 2.8vh, 30px);
+}
+.df-stage__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-2);
+}
+.df-stage__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-3);
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.df-stage__hint.is-gone {
+  opacity: 0;
+}
+.df-stage__arrow {
+  display: inline-block;
+  animation: df-nudge 2.4s var(--ease-in-out) infinite;
+}
+@keyframes df-nudge {
+  0%,
+  100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+html.is-reduced .df-stage__arrow {
+  animation: none;
+}
+
+/* --------------------------------------------------------------------------
+   Lanes
+   -------------------------------------------------------------------------- */
+.df-lanes {
+  /* Room on the right of the performance range for the last labels */
+  --df-lab: clamp(150px, 13.5vw, 196px);
+  --df-lw: calc(var(--df-lab) - 14px);
+  --df-zone-s: clamp(44px, 6.4vh, 60px);
+  --df-zone-l: clamp(56px, 8.6vh, 80px);
+  --df-stem: clamp(8px, 1.4vh, 14px);
+  border-top: 1px solid var(--line);
+}
+.df-lanes__rule {
+  display: block;
+  height: 1px;
+  background: var(--line);
+}
+
+.df-lane {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    'meta stamp count'
+    'track track track';
+  align-items: center;
+  column-gap: clamp(16px, 2vw, 32px);
+  row-gap: clamp(8px, 1.8vh, 18px);
+  padding-block: clamp(14px, 2.4vh, 26px) clamp(10px, 2vh, 22px);
+}
+.df-lane--trad {
+  --df-top: 10px;
+  --df-zone: var(--df-zone-s);
+  --df-foot: 0px;
+  --df-span: 40%;
+}
+.df-lane--perf {
+  --df-top: 30px;
+  --df-zone: var(--df-zone-l);
+  --df-foot: 30px;
+  --df-span: calc(100% - var(--df-lab));
+}
+
+/* Lane header — a track header, like the left edge of an NLE */
+.df-lane__head {
+  display: contents;
+}
+.df-lane__meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.df-lane__track {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-xs);
+  color: var(--fg-2);
+}
+.df-lane--perf .df-lane__track {
+  border-color: rgba(255, 90, 31, 0.42);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.df-lane__names {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.df-lane__name {
+  color: var(--fg);
+}
+.df-lane--trad .df-lane__name {
+  color: var(--fg-2);
+}
+.df-lane__sub {
+  color: var(--fg-3);
+}
+
+.df-stamp {
+  grid-area: stamp;
+  justify-self: end;
+}
+.df-stamp .df-stamp__chip {
+  height: 30px;
+  padding: 0 14px;
+  box-shadow: 0 14px 34px -14px var(--accent-glow);
+}
+
+.df-count {
+  grid-area: count;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  justify-self: end;
+}
+.df-count__n {
+  font-size: clamp(2.25rem, 3.3vw, 3.75rem);
+  font-weight: 520;
+  line-height: 0.8;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.df-lane--trad .df-count__n {
+  color: var(--fg-3);
+}
+.df-lane--perf.is-done .df-count__n {
+  color: var(--accent);
+}
+.df-count__u {
+  color: var(--fg-3);
+}
+
+/* --------------------------------------------------------------------------
+   Track (desktop geometry — the phone/tablet list is further down)
+   Every child measures against the track: --df-y is the lane line,
+   --df-span how far along it the steps reach.
+   -------------------------------------------------------------------------- */
+.df-track {
+  --df-y: calc(var(--df-top) + var(--df-zone));
+  grid-area: track;
+  position: relative;
+  height: calc(var(--df-top) + var(--df-zone) * 2 + var(--df-foot));
+}
+
+.df-track__line,
+.df-track__fill {
+  position: absolute;
+  left: 0;
+  top: var(--df-y);
+  width: var(--df-span);
+  height: 1px;
+  margin-top: -0.5px;
+  transform-origin: 0 50%;
+}
+.df-track__line {
+  background: var(--line-2);
+}
+.df-track__fill {
+  background: var(--fg-3);
+  transform: scaleX(0);
+}
+.df-lane--perf .df-track__fill {
+  height: 2px;
+  margin-top: -1px;
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+
+.df-range {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--df-span);
+  pointer-events: none;
+}
+
+/* 0:00 — 1:00 ruler under the performance lane */
+.df-ruler {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--df-foot) - 8px);
+}
+.df-ruler::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: -1px;
+  top: 0;
+  height: 9px;
+  background:
+    repeating-linear-gradient(90deg, var(--line-3) 0 1px, transparent 1px calc((100% - 1px) / 4)) 0 0 / 100% 9px no-repeat,
+    repeating-linear-gradient(90deg, var(--line-2) 0 1px, transparent 1px calc((100% - 1px) / 12)) 0 0 / 100% 5px no-repeat;
+}
+.df-ruler .df-ruler__l {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--p) * 100%);
+  translate: -50% 0;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--fg-4);
+}
+.df-ruler .df-ruler__l:first-child {
+  translate: 0 0;
+}
+.df-ruler .df-ruler__l:last-child {
+  translate: -100% 0;
+}
+
+/* Steps */
+.df-nodes {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--df-span);
+}
+.df-node {
+  position: absolute;
+  left: calc(var(--t) * 100%);
+  top: var(--df-y);
+  width: 0;
+  height: 0;
+}
+
+.df-node__dot {
+  position: absolute;
+  left: -5.5px;
+  top: -5.5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line-3);
+}
+.df-node__on {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--fg-3);
+  opacity: 0;
+  transform: scale(0.4);
+}
+.df-lane--perf .df-node__on {
+  background: var(--accent);
+}
+.df-node.is-lit .df-node__on {
+  opacity: 1;
+  transform: none;
+}
+.df-lane--perf .df-node.is-lit .df-node__on {
+  box-shadow:
+    0 0 0 4px var(--accent-soft),
+    0 0 18px 2px var(--accent-glow);
+}
+
+.df-node__stem {
+  position: absolute;
+  left: -0.5px;
+  width: 1px;
+  height: var(--df-stem);
+  background: var(--line-2);
+}
+.df-node.is-above .df-node__stem {
+  bottom: 9px;
+}
+.df-node.is-below .df-node__stem {
+  top: 9px;
+}
+.df-lane--perf .df-node.is-lit .df-node__stem {
+  background: var(--accent);
+}
+
+/* Label: hanging mono index + balanced text, growing away from the line */
+.df-node__txt {
+  position: absolute;
+  left: -1px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 7px;
+  width: max-content;
+  max-width: var(--df-lw);
+}
+.df-node.is-above .df-node__txt {
+  bottom: calc(15px + var(--df-stem));
+}
+.df-node.is-below .df-node__txt {
+  top: calc(15px + var(--df-stem));
+}
+.df-node .df-node__i {
+  font-size: 10px;
+  color: var(--fg-4);
+}
+.df-node__label {
+  font-size: clamp(12.5px, 0.92vw, 14px);
+  font-weight: 450;
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  color: var(--fg-3);
+  text-wrap: balance;
+}
+.df-lane--perf .df-node.is-lit .df-node__label {
+  color: var(--fg);
+}
+.df-lane--perf .df-node.is-lit .df-node__i {
+  color: var(--accent);
+}
+.df-lane--trad .df-node.is-lit .df-node__i {
+  color: var(--fg-3);
+}
+
+/* Phone/tablet connectors — hidden on the horizontal timeline */
+.df-node__seg {
+  display: none;
+}
+
+/* Where the traditional edit stops: EXPORT. and the timeline it never uses */
+.df-track__end {
+  position: absolute;
+  left: calc(var(--df-span) + 20px);
+  right: var(--df-lab);
+  top: var(--df-y);
+  height: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.df-track__cap {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-xs);
+  color: var(--fg-3);
+  transition:
+    color var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+}
+.df-lane.is-done .df-track__cap {
+  border-color: var(--line-3);
+  color: var(--fg-2);
+}
+.df-track__ghost {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--line-2) 0 4px, transparent 4px 10px);
+}
+
+/* Playheads */
+.df-ph {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.df-ph__line {
+  position: absolute;
+  left: -0.5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--fg-3);
+}
+.df-ph--perf .df-ph__line {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.df-ph__knob {
+  position: absolute;
+  left: -5px;
+  top: calc(var(--df-y) - 5px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fg-2);
+  box-shadow: 0 0 0 3px var(--bg);
+}
+.df-ph--perf .df-ph__knob {
+  background: var(--accent);
+  box-shadow:
+    0 0 0 3px var(--bg),
+    0 0 18px 3px var(--accent-glow);
+}
+.df-ph .df-ph__flag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px -8px var(--accent-glow);
+}
+
+/* State transitions belong to the desktop timeline only — on phones the
+   same properties are scrubbed by GSAP and must not be eased twice */
+@media (min-width: 1024px) {
+  .df-pin {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    margin-top: clamp(24px, 4vw, 72px);
+  }
+  .df-stage {
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 72px; /* clear of the HUD */
+  }
+  .df-lanes {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .df-node__on {
+    transition:
+      opacity 0.4s var(--ease-out),
+      transform 0.7s var(--ease-out),
+      box-shadow 0.7s var(--ease-out);
+  }
+  .df-node__label,
+  .df-node .df-node__i {
+    transition: color var(--dur-2) var(--ease-out);
+  }
+  .df-node__stem {
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Phones & tablets — two vertical lists, no pin
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .df-stage__hint {
+    display: none;
+  }
+
+  .df-lanes {
+    display: grid;
+  }
+  .df-lane {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'meta count'
+      'track track'
+      'stamp stamp';
+    row-gap: 18px;
+    padding-block: 24px 4px;
+  }
+  .df-count__n {
+    font-size: clamp(2.25rem, 8vw, 3rem);
+  }
+
+  .df-track {
+    height: auto;
+  }
+  .df-track__line,
+  .df-track__fill,
+  .df-range,
+  .df-ph,
+  .df-node__stem {
+    display: none;
+  }
+
+  /* Each row: dot on the spine · index · label. --df-dy is the dot's centre,
+     so a connector from one dot reaches exactly the next. */
+  .df-nodes {
+    position: relative;
+  }
+  .df-node {
+    --df-dy: 24px;
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    column-gap: 14px;
+    padding-block: 12px;
+  }
+  .df-node__dot {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    justify-self: center;
+    margin-top: 6.5px;
+  }
+  .df-lane--perf .df-node__on {
+    box-shadow:
+      0 0 0 4px var(--accent-soft),
+      0 0 16px var(--accent-glow);
+  }
+  .df-lane--trad .df-node__on {
+    opacity: 1;
+    transform: none;
+    background: var(--fg-4);
+  }
+
+  .df-node__seg {
+    display: block;
+    position: absolute;
+    left: 10.5px;
+    top: var(--df-dy);
+    bottom: calc(var(--df-dy) * -1);
+    width: 1px;
+    background: var(--line-2);
+  }
+  .df-node__segfill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+  }
+
+  .df-node__txt {
+    position: static;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    width: auto;
+    max-width: none;
+  }
+  .df-node .df-node__i {
+    line-height: 24px;
+    color: var(--accent);
+  }
+  .df-node__label {
+    font-size: 1.0625rem;
+    line-height: 24px;
+    letter-spacing: -0.012em;
+    color: var(--fg);
+  }
+  .df-lane--trad .df-node .df-node__i {
+    color: var(--fg-4);
+  }
+  .df-lane--trad .df-node__label {
+    font-size: 1rem;
+    color: var(--fg-3);
+  }
+
+  /* The traditional list simply stops */
+  .df-track__end {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    padding: 12px 0 0 36px;
+  }
+  .df-track__end::before {
+    content: '';
+    position: absolute;
+    left: 10.5px;
+    top: 24px;
+    width: 19px;
+    height: 1px;
+    background: var(--line-2);
+  }
+  .df-track__ghost {
+    display: none;
+  }
+
+  .df-stamp {
+    justify-self: start;
+    padding: 6px 0 0 36px;
+  }
+}
+
+/* Tablet — the two editors side by side: the length says it all */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .df-lanes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    column-gap: clamp(32px, 5vw, 56px);
+  }
+  .df-lanes__rule {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .df-title {
+    font-size: min(var(--fs-display), 10.4vw);
+  }
+  .df-lanes__rule {
+    margin-top: 36px;
+  }
+  .df-lane__meta {
+    align-items: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Philosophy ticker
+   -------------------------------------------------------------------------- */
+.df-phil {
+  margin-top: clamp(104px, 20vw, 168px);
+}
+@media (min-width: 1024px) {
+  .df-phil {
+    margin-top: clamp(48px, 6vw, 120px);
+  }
+}
+
+.df-phil__head {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 3vw, 48px);
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.df-phil__label {
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.df-bars {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 56px;
+  max-width: 300px;
+}
+.df-bars__seg {
+  height: 2px;
+  overflow: clip;
+  border-radius: 2px;
+  background: var(--line-2);
+}
+.df-bars__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.df-phil__count {
+  margin-left: auto;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.df-phil__cur {
+  color: var(--fg);
+}
+
+.df-phil__line {
+  margin-top: clamp(40px, 6vw, 104px);
+  color: var(--fg);
+}
+.df-phil__lead {
+  display: block;
+}
+/* The rolling word: every word shares one grid cell, the widest sets the
+   width; padding gives the italic overhang room inside the mask. */
+.df-slot {
+  display: grid;
+  overflow: clip;
+  padding: 0.04em 0.12em 0.18em 0;
+  margin: -0.04em -0.12em -0.18em 0;
+}
+.df-slot__w {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+.df-phil__static {
+  display: block;
+  margin-top: 0.34em;
+  font-size: 0.56em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.df-phil__sep {
+  color: var(--fg-4);
+}
+
+.df-phil__foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: clamp(32px, 4.4vw, 72px);
+}
+.df-phil__note {
+  max-width: 34ch;
+}
+
+@media (max-width: 767px) {
+  .df-phil__line {
+    font-size: min(var(--fs-h1), 8.8vw);
+  }
+  .df-phil__foot {
+    justify-content: flex-start;
+  }
+}

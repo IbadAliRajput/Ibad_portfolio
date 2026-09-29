@@ -1,0 +1,113 @@
+.ft {
+  position: relative;
+  overflow: clip;
+  padding-top: clamp(96px, 14vh, 180px);
+  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(60% 40% at 50% 100%, rgba(255, 90, 31, 0.1), transparent 70%),
+    var(--bg);
+}
+.ft__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding-bottom: clamp(56px, 8vw, 112px);
+  border-bottom: 1px solid var(--line);
+}
+.ft__slogan { max-width: 15ch; }
+.ft__reach { display: grid; justify-items: start; gap: 24px; }
+.ft__email {
+  position: relative;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+  transition: background-size 0.8s var(--ease-out);
+  padding-bottom: 4px;
+}
+.ft__email:hover { background-size: 100% 1px; }
+
+.ft__cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px var(--gutter);
+  padding-block: clamp(48px, 6vw, 80px);
+}
+.ft__col { display: grid; align-content: start; gap: 18px; }
+.ft__col ul { display: grid; gap: 8px; font-size: 15px; }
+.ft__col a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-2);
+  transition: color var(--dur-2);
+}
+.ft__col a:hover { color: var(--fg); }
+.ft__col a svg { width: 12px; height: 12px; opacity: 0.6; }
+.ft__status { display: inline-flex; align-items: center; gap: 9px; }
+
+.ft__mark {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: calc(var(--pad) * 0.6);
+  font-size: clamp(6rem, 31vw, 34rem);
+  font-weight: 650;
+  line-height: 0.74;
+  letter-spacing: -0.07em;
+  color: var(--fg);
+  user-select: none;
+}
+/* Clip vertically only: the tight tracking makes each letter's box narrower
+   than its glyph, so a horizontal clip would shave the right edge of B, A, D */
+.ft__letter-mask { display: block; overflow: visible clip; padding-top: 0.04em; }
+.ft__letter { display: block; }
+
+.ft__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-block: 22px 28px;
+  color: var(--fg-3);
+  border-top: 1px solid var(--line);
+  margin-top: clamp(16px, 2vw, 28px);
+}
+.ft__top-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-2);
+  text-transform: inherit;
+  letter-spacing: inherit;
+  font: inherit;
+  transition: color var(--dur-2);
+}
+.ft__top-btn:hover { color: var(--fg); }
+.ft__bar-end { display: inline-flex; align-items: center; gap: 28px; }
+.ft__motion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-2);
+  color: var(--fg-2);
+}
+.ft__motion::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fg-3);
+}
+.ft__motion.is-on::before { background: var(--accent); }
+.ft__top-btn svg { width: 12px; height: 12px; }
+
+/* leave a clear lane under the bar for the fixed desktop HUD */
+@media (min-width: 1024px) {
+  .ft__bar { padding-bottom: 72px; }
+}
+@media (max-width: 900px) {
+  .ft__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ft__eor { display: none; }
+}

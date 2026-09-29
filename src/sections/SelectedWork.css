@@ -1,0 +1,356 @@
+/* ==========================================================================
+   03 — Selected Work
+   Pinned horizontal gallery (≥1024) · scroll-snap carousel (<1024)
+   ========================================================================== */
+.wk {
+  position: relative;
+  overflow-x: clip;
+}
+.wk-head {
+  padding-top: var(--section-y);
+  padding-bottom: clamp(48px, 6vw, 104px);
+}
+
+/* --------------------------------------------------------------------------
+   Stage + ambient tone
+   -------------------------------------------------------------------------- */
+.wk-stage {
+  position: relative;
+  isolation: isolate;
+}
+.wk-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: clip;
+  pointer-events: none;
+}
+.wk-ambient__glow {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: min(1500px, 115vw);
+  aspect-ratio: 2 / 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--wk-tone), transparent);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* --------------------------------------------------------------------------
+   Track + items
+   -------------------------------------------------------------------------- */
+.wk-track {
+  position: relative; /* offsetParent for the items */
+  display: flex;
+  align-items: flex-start;
+}
+.wk-item {
+  flex: none;
+}
+
+/* --------------------------------------------------------------------------
+   Card
+   -------------------------------------------------------------------------- */
+.wk-card {
+  display: block;
+  color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+}
+.wk-card:focus-visible {
+  outline: none;
+}
+.wk-card__media {
+  position: relative;
+  border-radius: var(--r-phone);
+  outline: 1.5px solid transparent;
+  outline-offset: 6px;
+  transition: outline-color var(--dur-2) var(--ease-out);
+}
+.wk-card:focus-visible .wk-card__media {
+  outline-color: var(--accent);
+}
+
+/* Overlay bottom: burned-in caption + the glass CTA that rises on hover */
+.wk-card__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+  padding-bottom: 6px;
+}
+.wk-card__caption {
+  max-width: 90%;
+}
+.wk-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 7px 0 16px;
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transform: translateY(calc(100% + 40px)); /* parked below the frame edge (clipped by the video) */
+  transition: transform 0.9s var(--ease-out);
+}
+.wk-card__cta-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--fg);
+  color: var(--ink);
+  transition: transform 0.9s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .wk-card:hover .wk-card__cta {
+    transform: translateY(0);
+  }
+  .wk-card:hover .wk-card__cta-icon {
+    transform: rotate(-45deg);
+  }
+}
+.wk-card:focus-visible .wk-card__cta {
+  transform: translateY(0);
+}
+
+/* Info */
+.wk-card__info {
+  margin-top: clamp(16px, 1.5vw, 24px);
+}
+.wk-card__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-2);
+}
+.wk-card__idx {
+  color: var(--accent);
+}
+.wk-card__bar {
+  flex: none;
+  width: 16px;
+  height: 1px;
+  background: var(--line-3);
+}
+.wk-card__kicker {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.wk-card .wk-card__title {
+  margin-top: 12px;
+}
+.wk-card__meta {
+  margin-top: 8px;
+  color: var(--fg-3);
+}
+.wk-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.wk-card .wk-card__chip {
+  height: 24px;
+  padding: 0 10px;
+}
+
+/* --------------------------------------------------------------------------
+   End card
+   -------------------------------------------------------------------------- */
+.wk-end {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding-left: clamp(28px, 3vw, 48px);
+  border-left: 1px solid var(--line-2);
+}
+.wk-end__title {
+  margin-top: -0.08em; /* cap line meets the top of the frames */
+}
+.wk-end__foot {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   Progress — counter · hairline with playhead · hint
+   -------------------------------------------------------------------------- */
+.wk-progress {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 1.6vw, 24px);
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+  pointer-events: none;
+}
+.wk-progress__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  flex: none;
+  color: var(--fg-3);
+}
+.wk-progress__mask {
+  display: inline-block;
+  height: 1.3em;
+  overflow: clip;
+}
+.wk-progress__num {
+  display: inline-block;
+  color: var(--fg);
+}
+.wk-progress__sep {
+  color: var(--fg-4);
+}
+.wk-progress__track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--line-2);
+}
+.wk-progress__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--fg-2);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--wk-p, 0));
+}
+/* Full-width carrier translated by progress; its left edge is the playhead */
+.wk-progress__head {
+  position: absolute;
+  inset: 0;
+  transform: translateX(calc(var(--wk-p, 0) * 100%));
+}
+.wk-progress__head::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -1px;
+  width: 2px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.wk-progress__hint {
+  flex: none;
+  color: var(--fg-3);
+}
+.wk-progress__hint-touch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Desktop — pinned stage
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .wk-stage {
+    --wk-pt: clamp(56px, 8vh, 104px);
+    --wk-pb: 120px; /* progress row + clearance above the HUD */
+    --wk-info: 190px; /* card info block under each frame */
+    --wk-drop: 6vh; /* editorial offset of alternate cards */
+    --wk-h: max(
+      300px,
+      min(64vh, 620px, calc(100vh - var(--wk-pt) - var(--wk-pb) - var(--wk-info) - var(--wk-drop)))
+    );
+    --wk-w: calc(var(--wk-h) * 9 / 16);
+    --wk-gap: clamp(48px, calc(var(--wk-w) * 0.34), 132px);
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    padding-block: var(--wk-pt) var(--wk-pb);
+    overflow: clip;
+  }
+  .wk-track {
+    flex: none;
+    gap: var(--wk-gap);
+    width: max-content;
+    /* first card aligns with the container edge, at any viewport width */
+    padding-left: max(var(--pad), calc((100% - var(--max)) / 2 + var(--pad)));
+    padding-right: var(--pad);
+  }
+  html:not(.is-reduced) .wk-track {
+    will-change: transform;
+  }
+  .wk-item {
+    width: var(--wk-w);
+  }
+  .wk-item--low {
+    margin-top: var(--wk-drop);
+  }
+  .wk-item--end {
+    flex: none;
+    width: clamp(320px, 31vw, 520px);
+    height: var(--wk-h);
+    margin-left: calc(var(--wk-gap) * 0.25);
+  }
+  /* Title scales with the frame so it never wraps past two lines */
+  .wk-card .wk-card__title {
+    font-size: min(var(--fs-h3), calc(var(--wk-w) * 0.108));
+  }
+  .wk-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 64px;
+  }
+  .wk-progress__hint-touch,
+  .wk-more {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet / phone — native swipe carousel
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .wk {
+    padding-bottom: var(--section-y);
+  }
+  .wk-track {
+    gap: 16px;
+    padding: 8px var(--pad) 12px; /* vertical room for the focus ring inside the scroller */
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pad);
+    scrollbar-width: none;
+  }
+  .wk-track::-webkit-scrollbar {
+    display: none;
+  }
+  .wk-item {
+    width: clamp(220px, min(72vw, calc((100svh - 200px) * 9 / 16)), 360px);
+    scroll-snap-align: start;
+  }
+  .wk-item--end {
+    display: none;
+  }
+  .wk-progress {
+    margin-top: 28px;
+  }
+  .wk-progress__hint-desk {
+    display: none;
+  }
+  .wk-more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    margin-top: 40px;
+  }
+}

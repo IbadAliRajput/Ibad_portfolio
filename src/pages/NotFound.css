@@ -1,0 +1,18 @@
+.nf {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  padding-block: calc(var(--nav-h) + 40px) 80px;
+}
+.nf__inner { display: grid; justify-items: start; gap: 28px; }
+.nf .t-mono { display: inline-flex; align-items: center; gap: 10px; }
+.nf__tc {
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 12vw, 11rem);
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--fg-4);
+}
+.nf .t-h1 { max-width: 13ch; }

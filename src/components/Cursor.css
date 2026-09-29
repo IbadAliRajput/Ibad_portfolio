@@ -1,0 +1,95 @@
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.cursor.is-visible { opacity: 1; }
+
+.cursor__dot,
+.cursor__lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.cursor__dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  transition: opacity var(--dur-1), transform 0s;
+}
+
+.cursor__disc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
+  transition:
+    width 0.55s var(--ease-out),
+    height 0.55s var(--ease-out),
+    margin 0.55s var(--ease-out),
+    background-color 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out),
+    scale 0.3s var(--ease-out);
+}
+.cursor__label {
+  color: var(--ink);
+  font-size: 10.5px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+/* Hovering a link / button */
+.cursor[data-state='link'] .cursor__disc {
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Labelled states over media */
+.cursor[data-state='play'] .cursor__disc,
+.cursor[data-state='view'] .cursor__disc,
+.cursor[data-state='drag'] .cursor__disc,
+.cursor[data-state='open'] .cursor__disc,
+.cursor[data-state='next'] .cursor__disc {
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  background: var(--fg);
+  border-color: transparent;
+}
+.cursor[data-state='play'] .cursor__label,
+.cursor[data-state='view'] .cursor__label,
+.cursor[data-state='drag'] .cursor__label,
+.cursor[data-state='open'] .cursor__label,
+.cursor[data-state='next'] .cursor__label {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.08s;
+}
+.cursor[data-state='play'] .cursor__dot,
+.cursor[data-state='view'] .cursor__dot,
+.cursor[data-state='drag'] .cursor__dot,
+.cursor[data-state='open'] .cursor__dot,
+.cursor[data-state='next'] .cursor__dot,
+.cursor[data-state='link'] .cursor__dot { opacity: 0; }
+
+.cursor[data-state='hide'] { opacity: 0; }
+.cursor.is-down .cursor__disc { scale: 0.86; }

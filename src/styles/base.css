@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Base — reset, typography scale, layout primitives, shared utilities.
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--bg);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: 400;
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, ul, ol {
+  margin: 0;
+}
+ul, ol { padding: 0; list-style: none; }
+img, video, svg, canvas { display: block; max-width: 100%; }
+img, video { height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+em { font-style: normal; }
+::selection { background: var(--accent); color: var(--ink); }
+
+:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Thin scrollbar */
+html { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 8px; }
+
+/* Custom cursor hides the native one on fine pointers */
+html.has-cursor,
+html.has-cursor * { cursor: none !important; }
+
+/* --------------------------------------------------------------------------
+   Typography
+   -------------------------------------------------------------------------- */
+.t-mega, .t-display, .t-h1, .t-h2, .t-h3, .t-h4 {
+  font-family: var(--font-sans);
+  font-weight: 560;
+  text-wrap: balance;
+  font-kerning: normal;
+}
+.t-mega    { font-size: var(--fs-mega);    line-height: 0.84; letter-spacing: -0.06em; font-weight: 600; }
+.t-display { font-size: var(--fs-display); line-height: var(--lh-tight); letter-spacing: var(--ls-display); }
+.t-h1      { font-size: var(--fs-h1);      line-height: 0.95; letter-spacing: var(--ls-display); }
+.t-h2      { font-size: var(--fs-h2);      line-height: var(--lh-snug); letter-spacing: var(--ls-h); }
+.t-h3      { font-size: var(--fs-h3);      line-height: var(--lh-head); letter-spacing: var(--ls-tight); font-weight: 520; }
+.t-h4      { font-size: var(--fs-h4);      line-height: 1.25; letter-spacing: -0.012em; font-weight: 520; }
+.t-lead    { font-size: var(--fs-lead);    line-height: 1.5; letter-spacing: -0.01em; color: var(--fg-2); text-wrap: pretty; }
+.t-body    { font-size: var(--fs-body);    line-height: var(--lh-body); color: var(--fg-2); text-wrap: pretty; }
+.t-small   { font-size: var(--fs-small);   line-height: 1.5; color: var(--fg-2); }
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  line-height: 1.3;
+  font-weight: 450;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Editorial serif accent — use for 1–3 words inside a sans headline */
+.t-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  /* optical balance against the grotesk */
+  font-size: 1.06em;
+  line-height: 0.9;
+}
+
+.t-fg   { color: var(--fg); }
+.t-dim  { color: var(--fg-2); }
+.t-mute { color: var(--fg-3); }
+.t-faint{ color: var(--fg-4); }
+.t-accent { color: var(--accent); }
+.tabular { font-variant-numeric: tabular-nums; }
+/* keep a headline's last words together (no one-word last lines) */
+.nowrap { white-space: nowrap; }
+
+/* SplitText line masks — keep descenders from clipping */
+.line-mask { overflow: clip; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+
+/* --------------------------------------------------------------------------
+   Layout primitives
+   -------------------------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+.rule { height: 1px; background: var(--line); border: 0; margin: 0; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: fixed; top: 12px; left: 12px; z-index: 1000;
+  padding: 10px 16px; border-radius: var(--r-pill);
+  background: var(--fg); color: var(--ink);
+  transform: translateY(-160%);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.skip-link:focus-visible { transform: none; }
+/* the skip link's target takes focus programmatically; it needs no ring of its own */
+#main:focus { outline: none; }
+
+/* 9:16 frame — the native shape of the work */
+.frame-9x16 { aspect-ratio: 9 / 16; }
+
+/* Viewfinder crop marks — set --cm-c / --cm-s / --cm-w to tune */
+.cropmarks {
+  --cm-c: rgba(255, 255, 255, 0.55);
+  --cm-s: 14px;
+  --cm-w: 1px;
+  background:
+    linear-gradient(var(--cm-c) 0 0) top left / var(--cm-s) var(--cm-w) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) top left / var(--cm-w) var(--cm-s) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) top right / var(--cm-s) var(--cm-w) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) top right / var(--cm-w) var(--cm-s) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) bottom left / var(--cm-s) var(--cm-w) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) bottom left / var(--cm-w) var(--cm-s) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) bottom right / var(--cm-s) var(--cm-w) no-repeat,
+    linear-gradient(var(--cm-c) 0 0) bottom right / var(--cm-w) var(--cm-s) no-repeat;
+}
+
+/* Small pill chip — formats, tags, filters */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+.chip--solid { background: var(--fg); color: var(--ink); border-color: transparent; }
+.chip--accent { background: var(--accent); color: var(--ink); border-color: transparent; }
+
+/* Recording dot */
+.rec-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent-glow);
+  animation: rec-pulse 2.4s var(--ease-soft) infinite;
+  flex: none;
+}
+@keyframes rec-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--accent-glow); }
+  70%  { box-shadow: 0 0 0 7px rgba(255, 90, 31, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 90, 31, 0); }
+}
+
+/* Ad-caption style highlight (the look of burned-in short-form captions) */
+.caption-hl {
+  display: inline;
+  padding: 0.02em 0.22em 0.06em;
+  border-radius: 0.18em;
+  background: var(--accent);
+  color: var(--ink);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* --------------------------------------------------------------------------
+   Film grain overlay
+   -------------------------------------------------------------------------- */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  /* film-grain texture — served from the Cloudflare R2 media bucket */
+  background-image: url('https://ibadportfolio.com/noise.png');
+  background-size: 180px 180px;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  animation: grain 0.9s steps(6) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate3d(0, 0, 0); }
+  20%  { transform: translate3d(-4%, 3%, 0); }
+  40%  { transform: translate3d(3%, -5%, 0); }
+  60%  { transform: translate3d(-6%, -2%, 0); }
+  80%  { transform: translate3d(5%, 4%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* Gentle reduced-motion mode (see lib/env.js → getMotion). Hover/colour
+   transitions stay; autonomous loops stop. */
+html.is-reduced .grain,
+html.is-reduced .rec-dot { animation: none; }
+html.is-reduced { scroll-behavior: auto; }
+
+html.is-scroll-locked { overflow: hidden; }

@@ -1,0 +1,194 @@
+/* ==========================================================================
+   Hook variations
+   4-up row (≥1200) · scroll-snap carousel (<1200) · hook → body strip
+   ========================================================================== */
+.cs-var__list {
+  display: grid;
+  grid-template-columns: repeat(var(--cs-var-cols, 4), minmax(0, 1fr));
+  gap: var(--gutter);
+  margin-top: clamp(56px, 7vw, 112px);
+}
+.cs-var__item {
+  min-width: 0;
+}
+.cs-var__frame {
+  border-radius: var(--r-phone);
+}
+
+/* Info under each card */
+.cs-var__info {
+  margin-top: 18px;
+}
+.cs-var__id {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-3);
+}
+.cs-var__id-k {
+  color: var(--accent);
+}
+.cs-var__bar {
+  flex: none;
+  width: 16px;
+  height: 1px;
+  background: var(--line-3);
+}
+.cs-var__type {
+  margin-top: 12px;
+}
+.cs-var__desc {
+  margin-top: 6px;
+  max-width: 32ch;
+}
+
+/* "Body locked" card — fills the row when a project has three hooks */
+.cs-var__ghost {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+  aspect-ratio: 9 / 16;
+  padding: clamp(18px, 2vw, 28px);
+  border-radius: var(--r-phone);
+  border: 1px dashed var(--line-3);
+  /* the hatch an NLE uses for a locked range */
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 10px);
+}
+.cs-var__ghost-crop {
+  position: absolute;
+  inset: 12px;
+  --cm-s: 12px;
+  --cm-c: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+.cs-var__ghost-tc {
+  color: var(--accent);
+}
+.cs-var__ghost-copy {
+  max-width: 26ch;
+}
+
+/* --------------------------------------------------------------------------
+   Strip — hook lanes feeding one locked body
+   -------------------------------------------------------------------------- */
+.cs-var__strip {
+  --cs-hook: 24%;
+  margin-top: clamp(56px, 6vw, 96px);
+}
+.cs-var__track {
+  display: flex;
+  gap: 4px;
+}
+.cs-var__lanes {
+  flex: 0 0 var(--cs-hook);
+  display: grid;
+  gap: 4px;
+}
+.cs-var__lane {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  height: 22px;
+  padding-inline: 9px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent-2);
+  white-space: nowrap;
+  transform-origin: 0 50%;
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+.cs-var__lane-type {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.8;
+}
+.cs-var__body {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding-inline: 14px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 9px);
+  color: var(--fg-2);
+}
+.cs-var__body-len {
+  color: var(--fg-3);
+}
+.cs-var__scale {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: var(--fg-3);
+}
+.cs-var__scale-mid {
+  position: absolute;
+  top: 0;
+  left: calc(var(--cs-hook) + 2px);
+  translate: -50% 0;
+  color: var(--fg-2);
+}
+
+/* A card under the pointer (or focus) lights its lane */
+.cs-var__list:has(> .cs-var__item:nth-child(1):is(:hover, :focus-within)) ~ .cs-var__strip .cs-var__lane:nth-child(1),
+.cs-var__list:has(> .cs-var__item:nth-child(2):is(:hover, :focus-within)) ~ .cs-var__strip .cs-var__lane:nth-child(2),
+.cs-var__list:has(> .cs-var__item:nth-child(3):is(:hover, :focus-within)) ~ .cs-var__strip .cs-var__lane:nth-child(3),
+.cs-var__list:has(> .cs-var__item:nth-child(4):is(:hover, :focus-within)) ~ .cs-var__strip .cs-var__lane:nth-child(4),
+.cs-var__list:has(> .cs-var__item:nth-child(5):is(:hover, :focus-within)) ~ .cs-var__strip .cs-var__lane:nth-child(5) {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Narrow — native swipe carousel (bleeds to the viewport edges)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1199px) {
+  .cs-var__list {
+    display: flex;
+    gap: 14px;
+    margin-inline: calc(-1 * var(--pad));
+    padding: 8px var(--pad) 22px; /* room for the focus ring + the info settle */
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pad);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  }
+  .cs-var__item {
+    flex: none;
+    /* ≥ 248px keeps the longest label chip ("Hook A · Pattern-Interrupt") inside the frame */
+    width: clamp(248px, 64vw, 300px);
+    scroll-snap-align: start;
+  }
+  .cs-var__strip {
+    --cs-hook: 30%;
+    margin-top: clamp(36px, 6vw, 56px);
+  }
+}
+@media (max-width: 1199px) and (hover: none) {
+  .cs-var__list {
+    scrollbar-width: none;
+  }
+  .cs-var__list::-webkit-scrollbar {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .cs-var__lane-type {
+    display: none;
+  }
+  .cs-var__body-len {
+    display: none;
+  }
+}

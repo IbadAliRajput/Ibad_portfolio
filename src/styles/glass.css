@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Liquid glass — see components/LiquidGlass.jsx
+   ========================================================================== */
+.glass {
+  --glass-r: 24px;
+  --glass-bg: rgba(255, 255, 255, 0.045);
+  --glass-lip: rgba(255, 255, 255, 0.26);
+  --glass-edge-a: rgba(255, 255, 255, 0.55);
+  --glass-edge-b: rgba(255, 255, 255, 0.06);
+  --glass-edge-c: rgba(255, 255, 255, 0.24);
+  --glass-shadow: 0 22px 60px -24px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.22);
+  position: relative;
+  z-index: 0;
+  border-radius: var(--glass-r);
+}
+
+.glass__backdrop,
+.glass__sheen,
+.glass__edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.glass__backdrop {
+  z-index: -2;
+  background: var(--glass-bg);
+  box-shadow:
+    inset 0 1px 0 var(--glass-lip),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 12px 28px -18px rgba(255, 255, 255, 0.28),
+    inset 0 -14px 28px -22px rgba(255, 255, 255, 0.12),
+    var(--glass-shadow);
+}
+
+/* Specular sheen — follows --mx / --my set by the pointer */
+.glass__sheen {
+  z-index: -1;
+  background:
+    radial-gradient(90% 120% at var(--mx, 22%) var(--my, -10%), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 42%, rgba(255, 255, 255, 0.025) 100%);
+  opacity: 0.85;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.glass:hover > .glass__sheen { opacity: 1; }
+
+/* Hairline edge with a light-catching gradient */
+.glass__edge {
+  z-index: 2;
+  padding: 1px;
+  background: linear-gradient(
+    155deg,
+    var(--glass-edge-a) 0%,
+    var(--glass-edge-b) 32%,
+    rgba(255, 255, 255, 0.02) 58%,
+    var(--glass-edge-c) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.glass__svg { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+
+/* Tones */
+.glass--dark {
+  --glass-bg: rgba(10, 10, 12, 0.42);
+  --glass-lip: rgba(255, 255, 255, 0.18);
+  --glass-edge-a: rgba(255, 255, 255, 0.42);
+}
+.glass--light {
+  --glass-bg: rgba(255, 255, 255, 0.11);
+  --glass-lip: rgba(255, 255, 255, 0.4);
+  --glass-edge-a: rgba(255, 255, 255, 0.75);
+}
+.glass--accent {
+  --glass-bg: rgba(255, 90, 31, 0.2);
+  --glass-lip: rgba(255, 200, 170, 0.45);
+  --glass-edge-a: rgba(255, 190, 160, 0.8);
+  --glass-edge-c: rgba(255, 120, 70, 0.5);
+}
+
+/* Refraction mode: a touch clearer so the bent light reads */
+.glass.is-refracting { --glass-bg: rgba(255, 255, 255, 0.025); }
+.glass--dark.is-refracting { --glass-bg: rgba(10, 10, 12, 0.3); }
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass { --glass-bg: rgba(22, 22, 26, 0.94); }
+}

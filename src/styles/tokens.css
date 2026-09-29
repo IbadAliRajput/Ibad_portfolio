@@ -1,0 +1,85 @@
+/* ==========================================================================
+   Design tokens — the single source of truth for colour, type, space, motion.
+   ========================================================================== */
+:root {
+  /* Colour — neutral foundation + one controlled accent */
+  --bg: #070708;
+  --bg-2: #0b0b0d;
+  --surface: #111114;
+  --surface-2: #17171b;
+  --surface-3: #1e1e23;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --line-3: rgba(255, 255, 255, 0.24);
+
+  --fg: #f4f2ee;
+  --fg-2: rgba(244, 242, 238, 0.66);
+  --fg-3: rgba(244, 242, 238, 0.5); /* ≥ 4.5:1 on --bg for the small mono labels that use it */
+  --fg-4: rgba(244, 242, 238, 0.2);
+  --ink: #0a0a0b; /* text on light surfaces */
+
+  --accent: #ff5a1f;
+  --accent-2: #ff8657;
+  --accent-soft: rgba(255, 90, 31, 0.14);
+  --accent-glow: rgba(255, 90, 31, 0.38);
+
+  /* Type */
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', 'Times New Roman', serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --fs-mega: clamp(3.4rem, 12.4vw, 14rem);
+  --fs-display: clamp(2.9rem, 7.6vw, 8.4rem);
+  --fs-h1: clamp(2.5rem, 5.8vw, 6.25rem);
+  --fs-h2: clamp(2.05rem, 4.3vw, 4.6rem);
+  --fs-h3: clamp(1.4rem, 2.2vw, 2.1rem);
+  --fs-h4: clamp(1.125rem, 1.4vw, 1.375rem);
+  --fs-lead: clamp(1.0625rem, 1.3vw, 1.3rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-micro: 0.6875rem;
+
+  --lh-tight: 0.9;
+  --lh-snug: 1.04;
+  --lh-head: 1.12;
+  --lh-body: 1.55;
+  --ls-display: -0.05em;
+  --ls-h: -0.038em;
+  --ls-tight: -0.02em;
+  --ls-mono: 0.09em;
+
+  /* Space & layout */
+  --pad: clamp(16px, 4.2vw, 72px);
+  --gutter: clamp(12px, 1.6vw, 24px);
+  --max: 1720px;
+  --section-y: clamp(104px, 17vh, 220px);
+  --nav-h: 76px;
+
+  /* Radius */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+  --r-phone: clamp(16px, 1.9vw, 30px);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --dur-1: 0.2s;
+  --dur-2: 0.45s;
+  --dur-3: 0.8s;
+  --dur-4: 1.2s;
+
+  /* Layers */
+  --z-hud: 40;
+  --z-nav: 50;
+  --z-menu: 60;
+  --z-modal: 80;
+  --z-transition: 90;
+  --z-preloader: 100;
+  --z-grain: 105;
+  --z-cursor: 110;
+}

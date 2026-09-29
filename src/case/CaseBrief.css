@@ -1,0 +1,122 @@
+/* ==========================================================================
+   The brief — editorial spec sheet
+   ========================================================================== */
+.cs-brief__list {
+  margin-top: clamp(56px, 7vw, 120px);
+}
+.cs-brief__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 18px;
+  padding-block: clamp(30px, 3.6vw, 56px);
+}
+.cs-brief__row:last-child {
+  padding-bottom: 0;
+}
+.cs-brief__rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line-2);
+  transform-origin: 0 50%;
+}
+
+/* Label column */
+.cs-brief__k {
+  grid-column: 1 / span 4;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  /* sit on the first line of the lead copy beside it */
+  padding-top: 0.55em;
+  color: var(--fg-2);
+}
+.cs-brief__i {
+  color: var(--accent);
+}
+
+/* Content column */
+.cs-brief__v {
+  grid-column: 5 / -1;
+  min-width: 0;
+}
+.cs-brief__lead {
+  max-width: 46ch;
+  color: var(--fg);
+}
+.cs-brief__lead .cs-arrow {
+  padding-inline: 0.12em;
+}
+
+/* Deliverables — indexed list with hairlines */
+.cs-deliv {
+  display: grid;
+  max-width: 720px;
+}
+.cs-deliv__item {
+  display: grid;
+  grid-template-columns: 3.2ch minmax(0, 1fr);
+  align-items: baseline;
+  gap: 16px;
+  padding-block: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.cs-deliv__item:first-child {
+  padding-top: 0.2em;
+}
+.cs-deliv__i {
+  color: var(--fg-3);
+}
+.cs-deliv__t {
+  color: var(--fg);
+}
+
+/* Tools — chips, then scope + style */
+.cs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 720px;
+  padding-top: 0.3em;
+}
+.chip.cs-chip {
+  height: 32px;
+  padding: 0 14px;
+  color: var(--fg);
+  transition: border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+}
+.chip.cs-chip:hover {
+  border-color: var(--line-3);
+  background: rgba(255, 255, 255, 0.06);
+}
+.cs-scope {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+.cs-scope__row {
+  display: grid;
+  grid-template-columns: 9ch minmax(0, 1fr);
+  align-items: baseline;
+  gap: 16px;
+}
+.cs-scope__k {
+  color: var(--fg-3);
+}
+.cs-scope__v {
+  color: var(--fg-2);
+}
+
+@media (max-width: 899px) {
+  .cs-brief__k,
+  .cs-brief__v {
+    grid-column: 1 / -1;
+  }
+  .cs-brief__k {
+    padding-top: 0;
+  }
+}

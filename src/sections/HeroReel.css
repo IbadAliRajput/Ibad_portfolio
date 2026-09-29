@@ -1,0 +1,584 @@
+/* ==========================================================================
+   Hero → Showreel (pinned). Prefix: hr__
+   ========================================================================== */
+.hr { position: relative; }
+
+.hr__stage {
+  /* phone (reel) size + top offset; everything else is laid out around it */
+  --ph: min(74vh, 760px);
+  --pw: calc(var(--ph) * 0.5625);
+  --pt: calc((100vh - var(--ph)) * 0.36);
+  --edge: max(var(--pad), calc((100vw - var(--max)) / 2 + var(--pad)));
+  position: relative;
+  height: 100vh;
+  min-height: 560px;
+  overflow: clip;
+  background:
+    radial-gradient(55% 60% at 74% 56%, rgba(255, 90, 31, 0.1), transparent 70%),
+    radial-gradient(40% 50% at 20% 30%, rgba(255, 255, 255, 0.035), transparent 70%),
+    var(--bg);
+}
+
+.hr__intro { visibility: hidden; }
+
+/* ---------- Hero copy ---------- */
+.hr__head {
+  position: absolute;
+  inset: calc(var(--nav-h) + 9vh) 0 auto 0;
+  z-index: 7;
+  pointer-events: none;
+}
+.hr__head > * { pointer-events: auto; width: fit-content; max-width: 100%; }
+.hr__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-2);
+  margin-bottom: clamp(18px, 3vh, 30px);
+}
+.hr__title {
+  font-size: clamp(3.1rem, 6.1vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.058em;
+  font-weight: 580;
+  white-space: nowrap;
+}
+.hr__title .t-serif { font-size: 1.08em; letter-spacing: -0.03em; }
+.hr__lead { max-width: 35ch; margin-top: clamp(20px, 3.2vh, 34px); }
+.hr__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(24px, 4vh, 42px); }
+
+.hr__foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(70px, 10vh, 104px);
+  z-index: 7;
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+.hr__formats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  color: var(--fg-2);
+}
+.hr__formats span { display: inline-flex; align-items: center; gap: 14px; }
+.hr__formats span + span::before {
+  content: '';
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.hr__cue {
+  position: absolute;
+  right: var(--edge);
+  bottom: clamp(70px, 10vh, 104px);
+  z-index: 7;
+  pointer-events: none;
+}
+.hr__cue-in { display: inline-flex; align-items: center; gap: 14px; }
+.hr__cue-line {
+  position: relative;
+  width: 56px;
+  height: 1px;
+  overflow: hidden;
+  background: var(--line-2);
+}
+.hr__cue-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--fg);
+  transform: translateX(-100%);
+  animation: hr-cue 2.4s var(--ease-in-out) infinite;
+}
+@keyframes hr-cue {
+  0% { transform: translateX(-100%); }
+  55% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+html.is-reduced .hr__cue-line::after { animation: none; transform: none; }
+
+/* ---------- Fan of cards ---------- */
+.hr__fan {
+  position: absolute;
+  z-index: 4;
+  left: 72%;
+  top: 55%;
+  height: min(54vh, 560px);
+  aspect-ratio: 9 / 16;
+  translate: -50% -50%;
+  transform-style: preserve-3d;
+}
+.hr__slot,
+.hr__card {
+  position: absolute;
+  inset: 0;
+}
+/* small desktops: the copy column is wide relative to the screen — tuck the fan right */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .hr__fan {
+    left: 77%;
+    height: min(46vh, 480px);
+  }
+}
+.hr__card { transform-origin: 50% 100%; }
+.hr__card-in { width: 100%; height: 100%; }
+.hr__card-in > a { display: block; height: 100%; border-radius: 22px; }
+.hr__vv { --vv-r: 22px; height: 100%; }
+.hr__vv .ad-caption { font-size: clamp(13px, 1vw, 16px); }
+
+/* ---------- The phone ---------- */
+.hr__phone {
+  position: absolute;
+  z-index: 6;
+  top: var(--pt);
+  left: calc(50% - var(--pw) / 2);
+  width: var(--pw);
+  height: var(--ph);
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.hr__phone-in {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+.hr__screen {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: 7.6cqw;
+  background: #000;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 80px 140px -40px rgba(0, 0, 0, 0.95),
+    0 0 120px -30px rgba(255, 90, 31, 0.28);
+}
+.hr__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hr__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0) 20%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 42%);
+  pointer-events: none;
+}
+
+/* hero-state overlay (sizes in cqw so they survive the scale-down) */
+.hr__phone-hero { pointer-events: none; }
+.hr__screen > .hr__phone-hero {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5cqw;
+}
+.hr__ph-top { display: flex; align-items: center; justify-content: space-between; }
+.hr__ph-top .t-mono { font-size: 3.6cqw; color: rgba(255, 255, 255, 0.8); }
+.hr__ph-chip {
+  height: 8.4cqw;
+  padding: 0 3cqw;
+  font-size: 3.6cqw;
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: var(--fg);
+  backdrop-filter: blur(10px);
+}
+.hr__ph-cap {
+  margin: 0 auto 30%;
+  font-weight: 700;
+  font-size: 7.6cqw;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-align: center;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+}
+
+.hr__play {
+  position: absolute;
+  left: 50%;
+  bottom: 8cqw;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3cqw;
+  height: 14cqw;
+  padding: 0 6cqw 0 5cqw;
+  font-size: 4.6cqw;
+  font-weight: 540;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  pointer-events: auto;
+  white-space: nowrap;
+}
+.hr__play svg { width: 4.2cqw; height: 4.2cqw; }
+
+/* reel-state overlay inside the phone */
+.hr__phone-ui { position: absolute; inset: 0; }
+.hr__ui-top {
+  position: absolute;
+  top: 4.4cqw;
+  left: 4.4cqw;
+  right: 4.4cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hr__rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.4cqw;
+  height: 9cqw;
+  padding: 0 3.6cqw;
+}
+.hr__rec .t-mono { font-size: 2.9cqw; color: var(--fg); }
+.hr__rec .rec-dot { width: 1.8cqw; height: 1.8cqw; }
+.hr__ratio { font-size: 2.9cqw; color: rgba(255, 255, 255, 0.7); }
+
+.hr__safe {
+  position: absolute;
+  top: 12%;
+  bottom: 20%;
+  left: 5%;
+  right: 16%;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 3cqw;
+}
+.hr__safe .t-mono {
+  position: absolute;
+  top: 2cqw;
+  left: 2.6cqw;
+  font-size: 2.3cqw;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.hr__rail {
+  position: absolute;
+  right: 3.6cqw;
+  bottom: 24%;
+  display: grid;
+  gap: 5cqw;
+}
+.hr__rail-btn {
+  display: block;
+  width: 8.2cqw;
+  height: 8.2cqw;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.hr__caps {
+  position: absolute;
+  left: 8%;
+  right: 18%;
+  top: 56%;
+}
+.hr__cap {
+  position: absolute;
+  inset: 0 0 auto 0;
+  font-weight: 750;
+  font-size: 7.2cqw;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+  text-align: center;
+  text-wrap: balance;
+  color: #fff;
+  text-shadow: 0 3px 20px rgba(0, 0, 0, 0.55);
+  visibility: hidden;
+}
+.hr__cap.is-on { visibility: visible; }
+.hr__w {
+  display: inline-block;
+  margin: 0 0.12em;
+  opacity: 0;
+  transform: translateY(0.3em) scale(0.86);
+  transition: opacity 0.18s ease-out, transform 0.35s var(--ease-out);
+}
+.hr__w.is-on { opacity: 1; transform: none; }
+.hr__w.caption-hl { display: inline-block; padding: 0.02em 0.2em 0.06em; }
+
+.hr__sponsor {
+  position: absolute;
+  left: 4.4cqw;
+  right: 4.4cqw;
+  bottom: 7cqw;
+  display: flex;
+  align-items: center;
+  gap: 2.6cqw;
+  font-size: 3.4cqw;
+  line-height: 1.25;
+}
+.hr__sponsor > span:nth-child(2) { display: grid; }
+.hr__sponsor b { font-weight: 600; }
+.hr__sponsor .t-mono { font-size: 2.4cqw; color: rgba(255, 255, 255, 0.6); }
+.hr__avatar {
+  width: 8.4cqw;
+  height: 8.4cqw;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #ffc3a6);
+  box-shadow: 0 0 0 0.5cqw rgba(255, 255, 255, 0.9);
+  flex: none;
+}
+.hr__learn {
+  margin-left: auto;
+  padding: 1.8cqw 3.6cqw;
+  border-radius: 2cqw;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+  font-size: 3.2cqw;
+}
+.hr__pline {
+  position: absolute;
+  left: 4.4cqw;
+  right: 4.4cqw;
+  bottom: 3.2cqw;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+.hr__pbar {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ---------- Reel side columns ---------- */
+.hr__left,
+.hr__right {
+  position: absolute;
+  top: var(--pt);
+  height: var(--ph);
+  width: calc(50% - var(--pw) / 2 - var(--edge) - clamp(28px, 4vw, 80px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(14px, 2vh, 22px);
+  z-index: 5;
+}
+.hr__left { left: var(--edge); container-type: inline-size; }
+.hr__right { right: var(--edge); align-items: flex-end; text-align: right; }
+
+.hr__beat-label {
+  position: relative;
+  /* descender room for "Explanation"; the negative margin keeps the column rhythm */
+  height: 1.06em;
+  margin-bottom: -0.08em;
+  overflow: clip;
+  /* the longest word ("Explanation.") is ~5.2em — never wider than the column */
+  font-size: min(clamp(2.6rem, 5.4vw, 6rem), 18.6cqw);
+  font-weight: 580;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+.hr__beat-word { position: absolute; left: 0; top: 0; white-space: nowrap; }
+.hr__beat-range { margin-top: -4px; }
+.hr__beat-goal { max-width: 24ch; color: var(--fg); min-height: 3em; }
+
+.hr__beats {
+  display: grid;
+  gap: 2px;
+  margin-top: clamp(4px, 1.4vh, 16px);
+  max-width: 330px;
+}
+.hr__beat {
+  position: relative;
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0 10px;
+  color: var(--fg-4);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.hr__beat.is-done { color: var(--fg-3); }
+.hr__beat.is-active { color: var(--fg); }
+.hr__beat.is-active .hr__beat-idx { color: var(--accent); }
+.hr__beat-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+.hr__beat-bar > i {
+  position: absolute;
+  inset: 0;
+  background: var(--fg-4);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.hr__beat.is-active .hr__beat-bar > i { background: var(--accent); }
+
+.hr__funnel { display: grid; gap: 4px; }
+.hr__stage-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: clamp(1.4rem, 2.3vw, 2.4rem);
+  font-weight: 540;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  color: var(--fg-4);
+  transition: color 0.6s var(--ease-out);
+}
+.hr__stage-idx { font-size: 10px; color: var(--fg-4); transform: translateY(-0.9em); transition: color 0.6s var(--ease-out); }
+.hr__stage-item.is-done { color: var(--fg-3); }
+.hr__stage-item.is-active { color: var(--fg); }
+.hr__stage-item.is-active .hr__stage-idx { color: var(--accent); }
+.hr__note { max-width: 26ch; margin-top: clamp(8px, 2vh, 20px); }
+
+/* ---------- Timeline strip ---------- */
+.hr__timeline {
+  --rp: 0;
+  position: absolute;
+  z-index: 5;
+  left: var(--edge);
+  right: var(--edge);
+  top: calc(var(--pt) + var(--ph) + clamp(18px, 3.2vh, 34px));
+  height: 44px;
+}
+.hr__ruler {
+  position: relative;
+  height: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.hr__ruler > span {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 4px;
+  background: var(--line-3);
+}
+.hr__ruler > span.is-major { height: 8px; }
+.hr__ruler i {
+  position: absolute;
+  bottom: 9px;
+  left: 5px;
+  font-style: normal;
+  font-size: 9.5px;
+  color: var(--fg-3);
+}
+.hr__track {
+  display: flex;
+  gap: 3px;
+  height: 24px;
+  margin-top: 7px;
+}
+.hr__seg {
+  position: relative;
+  flex-basis: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: background-color 0.5s var(--ease-out), border-color 0.5s var(--ease-out);
+}
+.hr__seg.is-done { background: var(--surface-3); }
+.hr__seg.is-active { background: rgba(255, 90, 31, 0.14); border-color: rgba(255, 90, 31, 0.7); }
+.hr__seg-name {
+  font-size: 9.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg-3);
+}
+.hr__seg.is-active .hr__seg-name { color: var(--fg); }
+.hr__playhead {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: calc(var(--rp) * 100%);
+  width: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.hr__flag {
+  position: absolute;
+  z-index: 2;
+  bottom: 100%;
+  left: 0;
+  /* slides from left-aligned to right-aligned so it never leaves the strip */
+  translate: calc(var(--rp) * -100%) -4px;
+  padding: 3px 6px 2px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+.hr__end { margin-top: 6px; }
+
+.hr__chip-m { display: none; }
+
+/* ---------- Tablet & mobile ---------- */
+@media (max-width: 1023px) {
+  .hr__stage {
+    --ph: min(62vh, calc((100vw - 56px) * 16 / 9));
+    --pt: 9vh;
+    min-height: 620px;
+  }
+  .hr__head { inset: calc(var(--nav-h) + 2vh) 0 auto 0; }
+  .hr__title { font-size: clamp(2.6rem, 11.2vw, 5.4rem); }
+  .hr__lead { font-size: 15.5px; max-width: 34ch; }
+  .hr__ctas .btn { --btn-h: 48px; --btn-icon: 34px; --btn-pad: 20px; font-size: 14px; }
+  .hr__foot,
+  .hr__cue,
+  .hr__left,
+  .hr__right { display: none; }
+  .hr__fan {
+    left: 50%;
+    top: auto;
+    bottom: -7vh;
+    height: min(46vh, 430px);
+    translate: -50% 0;
+  }
+  /* the fan bleeds off the bottom here, so the play pill moves up the screen to stay in view */
+  .hr__play { top: 30%; bottom: auto; }
+  .hr__chip-m {
+    position: absolute;
+    z-index: 5;
+    left: var(--pad);
+    right: var(--pad);
+    top: calc(var(--pt) + var(--ph) + 14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: var(--fg-2);
+    text-align: center;
+  }
+  .hr__timeline { top: calc(var(--pt) + var(--ph) + 72px); }
+  .hr__seg-name { font-size: 8.5px; }
+}
+
+@media (max-width: 767px) {
+  .hr__seg { padding: 0 5px; }
+  .hr__ruler i { font-size: 8.5px; }
+}
+
+@media (max-height: 700px) and (max-width: 1023px) {
+  .hr__lead { display: none; }
+}

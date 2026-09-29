@@ -1,0 +1,242 @@
+/* ==========================================================================
+   10 — Proof: the claim · process figures · retention toolkit   (pf-)
+   ========================================================================== */
+.pf {
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   1 · The claim — headline left, the lead set against its last line
+   -------------------------------------------------------------------------- */
+.pf-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: calc(var(--gutter) * 2);
+  align-items: end;
+}
+.pf-intro__title {
+  margin-top: clamp(24px, 2.6vw, 40px);
+}
+.pf-intro__lead {
+  max-width: 36ch;
+  padding-bottom: 0.4em;
+}
+
+@media (max-width: 899px) {
+  .pf-intro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pf-intro__lead {
+    margin-top: clamp(20px, 4vw, 32px);
+    padding-bottom: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2 · Process figures
+   -------------------------------------------------------------------------- */
+.pf-stats {
+  margin-top: clamp(88px, 12vh, 160px);
+}
+.pf-stats__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+}
+.pf-stats__title {
+  color: var(--fg-2);
+}
+.pf-stats__aside {
+  color: var(--fg-3);
+  text-align: right;
+}
+.pf-stats__rule {
+  display: block;
+  height: 1px;
+  background: var(--line-2);
+  transform-origin: 0 50%; /* draws left → right */
+}
+.pf-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.pf-stat {
+  position: relative;
+  padding: clamp(28px, 3vw, 44px) clamp(16px, 2vw, 32px) 8px;
+}
+.pf-stat:first-child {
+  padding-left: 0;
+}
+.pf-stat__vr {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: var(--line);
+  transform-origin: 50% 0; /* drops from the rule */
+}
+.pf-stat:first-child .pf-stat__vr {
+  display: none;
+}
+.pf-stat__hr {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+  transform-origin: 0 50%;
+}
+.pf .pf-stat__num {
+  font-weight: 520;
+  white-space: nowrap;
+}
+.pf-stat__label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: clamp(16px, 1.6vw, 24px);
+  color: var(--fg);
+}
+.pf-stat__idx {
+  color: var(--accent);
+}
+.pf-stat__note {
+  max-width: 28ch;
+  margin-top: 10px;
+  text-wrap: pretty;
+}
+
+@media (min-width: 900px) {
+  /* keep the widest figure ("0–3s") inside its column on every desktop width */
+  .pf .pf-stat__num { font-size: min(var(--fs-display), 6.6vw); }
+}
+
+@media (max-width: 899px) {
+  .pf-stats__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pf-stat {
+    padding: 28px 0 32px 20px;
+  }
+  .pf-stat:nth-child(odd) {
+    padding-left: 0;
+    padding-right: 16px;
+  }
+  .pf-stat:nth-child(odd) .pf-stat__vr {
+    display: none;
+  }
+  .pf-stat:nth-child(n + 3) .pf-stat__hr {
+    display: block;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3 · Retention toolkit
+   -------------------------------------------------------------------------- */
+.pf-tk {
+  margin-top: clamp(112px, 16vh, 200px);
+}
+.pf-tk__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 40px;
+  margin-bottom: clamp(28px, 3.6vw, 52px);
+}
+.pf-tk__title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--fg-2);
+}
+.pf-tk__count {
+  color: var(--accent);
+}
+.pf-tk__aside {
+  max-width: 38ch;
+  color: var(--fg-3);
+  text-align: right;
+  text-wrap: pretty;
+}
+
+.pf-tk__rows {
+  display: grid;
+  gap: clamp(2px, 0.5vw, 8px);
+  padding-block: clamp(18px, 2.2vw, 32px);
+  border-block: 1px solid var(--line);
+  overflow-x: clip;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+.pf-tk__list {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+.pf-tk__item {
+  display: flex;
+  align-items: center;
+  flex: none;
+  padding-block: 0.06em;
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: var(--ls-h);
+  white-space: nowrap;
+}
+.pf-tk__word {
+  color: var(--fg);
+  transition:
+    color var(--dur-2) var(--ease-out),
+    -webkit-text-stroke-color var(--dur-2) var(--ease-out);
+}
+.pf-tk__dot {
+  flex: none;
+  width: 0.13em;
+  height: 0.13em;
+  margin-inline: 0.5em;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Lane B — outline type for contrast */
+.pf-tk__row--b .pf-tk__word {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--fg-3);
+}
+.pf-tk__row--b .pf-tk__dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+@supports not (-webkit-text-stroke: 1px black) {
+  .pf-tk__row--b .pf-tk__word { color: var(--fg-4); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-tk__row--a .pf-tk__word:hover {
+    color: var(--accent);
+  }
+  .pf-tk__row--b .pf-tk__word:hover {
+    color: var(--fg);
+    -webkit-text-stroke-color: transparent;
+  }
+}
+
+@media (max-width: 767px) {
+  .pf-tk__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pf-tk__aside {
+    text-align: left;
+  }
+  .pf-tk__rows {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  }
+}

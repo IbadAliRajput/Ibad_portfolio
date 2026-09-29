@@ -1,0 +1,508 @@
+/* ==========================================================================
+   Case study · 04 — Behind the edit (NLE timeline)                 prefix: et-
+   ========================================================================== */
+.et {
+  /* clip palette — desaturated so the work, not the UI, carries the colour */
+  --et-caption: rgba(244, 242, 238, 0.7);
+  --et-ai: #8a80cc;
+  --et-broll: #4f9a92;
+  --et-aroll: #c2a27c;
+  --et-vo: #74a78a;
+  --et-sfx: var(--accent);
+  --et-music: #7f8da3;
+
+  --et-head-w: 188px;
+  --et-row-h: 42px;
+  --et-ruler-h: 32px;
+  --et-bar-h: 48px;
+  --et-tip-w: 236px;
+}
+
+.et-k--caption { --c: var(--et-caption); }
+.et-k--ai { --c: var(--et-ai); }
+.et-k--broll { --c: var(--et-broll); }
+.et-k--aroll { --c: var(--et-aroll); }
+.et-k--vo { --c: var(--et-vo); }
+.et-k--sfx { --c: var(--et-sfx); }
+.et-k--music { --c: var(--et-music); }
+
+/* --------------------------------------------------------------------------
+   Panel chrome
+   -------------------------------------------------------------------------- */
+.et-hintrow { display: none; }
+
+.et-panel {
+  position: relative;
+  margin-top: clamp(56px, 7vw, 104px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 50px 120px -60px rgba(0, 0, 0, 0.9);
+}
+/* right-edge fade while there's more timeline to swipe to */
+.et-panel.is-scrollable::after {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  top: var(--et-bar-h);
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(90deg, rgba(17, 17, 20, 0), var(--surface));
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out);
+}
+.et-panel.is-scrollable[data-end='true']::after { opacity: 0; }
+
+.et-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  height: var(--et-bar-h);
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.et-bar__name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--fg);
+}
+.et-bar__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.et-bar__dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.et-bar__seq {
+  color: var(--fg-3);
+  text-align: center;
+  white-space: nowrap;
+}
+.et-bar__rt {
+  justify-self: end;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.et-bar__k {
+  margin-right: 0.6em;
+  color: var(--fg-3);
+}
+
+/* --------------------------------------------------------------------------
+   Scroll area + canvas
+   -------------------------------------------------------------------------- */
+.et-scroll {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-inline-start: var(--et-head-w);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+.et-canvas {
+  position: relative;
+  min-width: 900px;
+}
+
+.et-row {
+  display: grid;
+  grid-template-columns: var(--et-head-w) minmax(0, 1fr);
+  height: var(--et-row-h);
+}
+.et-row--ruler { height: var(--et-ruler-h); }
+.et-row--track { border-top: 1px solid var(--line); }
+
+/* Track headers — sticky while the lanes scroll underneath */
+.et-head {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 14px 0 18px;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+}
+.et-head--ruler { color: var(--fg-3); }
+.et-head__sw {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--c);
+}
+.et-head__glyph {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid var(--line-2);
+  border-radius: 5px;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--fg-2);
+}
+.et-head__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  color: var(--fg-2);
+}
+.et-head__tgt {
+  flex: none;
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--fg-3);
+}
+
+/* Ruler — a tick every second, a label every five */
+.et-ruler {
+  position: relative;
+  overflow: clip;
+}
+.et-ruler__tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 5px;
+  background: var(--line-2);
+}
+.et-ruler__tick.is-major {
+  height: 12px;
+  background: var(--line-3);
+}
+.et-ruler__lbl {
+  position: absolute;
+  top: 7px;
+  left: 5px;
+  font-size: 9.5px;
+  line-height: 1;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+
+/* Lanes — faint 5-second grid, alternating tone */
+.et-lane {
+  position: relative;
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px);
+  background-size: calc(100% * 5 / var(--et-dur, 30)) 100%;
+}
+.et-row--track:nth-child(odd) .et-lane { background-color: rgba(255, 255, 255, 0.012); }
+
+/* --------------------------------------------------------------------------
+   Clips
+   -------------------------------------------------------------------------- */
+.et-clip {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  display: flex;
+  align-items: center;
+  min-width: 3px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--c), white 14%) 0%,
+    var(--c) 52%,
+    color-mix(in oklab, var(--c), black 16%) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--c), white 50%),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+  container-type: inline-size;
+  opacity: 0.45;
+  transform-origin: 0 50%;
+  transition:
+    opacity 0.45s var(--ease-out),
+    filter 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+/* played */
+.et-clip[data-state] { opacity: 1; }
+/* under the playhead right now */
+.et-clip[data-state='live'] {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--c), white 50%),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 0 20px -6px color-mix(in srgb, var(--c) 80%, transparent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .et-clip:hover { filter: brightness(1.14); }
+  .et-clip:not([data-state]):hover { opacity: 0.8; }
+}
+.et-clip:focus-visible {
+  z-index: 1;
+  outline: 1.5px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.et-k--sfx .et-clip:focus-visible { outline-color: var(--fg); }
+
+.et-clip__label {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(10, 10, 11, 0.8);
+}
+/* only when the clip is wide enough to hold a word */
+@container (max-width: 24px) {
+  .et-clip__label { display: none; }
+}
+
+/* VO + music: a waveform drawn into the clip, label on a chip above it */
+.et-clip__wave {
+  position: absolute;
+  top: 5px;
+  left: 3px;
+  width: calc(100% - 6px);
+  height: calc(100% - 10px);
+  overflow: visible;
+  pointer-events: none;
+}
+.et-clip__wave-path {
+  fill: none;
+  stroke: rgba(10, 10, 11, 0.36);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+.et-clip--audio .et-clip__label {
+  padding: 3px 5px 2px;
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--c), white 22%);
+}
+
+/* --------------------------------------------------------------------------
+   Playhead
+   -------------------------------------------------------------------------- */
+.et-ph-wrap {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: var(--et-head-w);
+  right: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.et-ph {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--accent-glow);
+  will-change: transform;
+}
+.et-ph__flag {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  padding: 4px 7px 3px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px -6px var(--accent-glow);
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Tooltip (Glass, dark)
+   -------------------------------------------------------------------------- */
+.et-canvas .et-tip {
+  position: absolute;
+  z-index: 5;
+  width: var(--et-tip-w);
+  padding: 12px 14px 13px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, calc(-100% + 6px));
+  transition:
+    opacity 0.22s var(--ease-out),
+    transform 0.35s var(--ease-out),
+    visibility 0s linear 0.22s;
+}
+.et-canvas .et-tip.is-below { transform: translate(-50%, -6px); }
+.et-canvas .et-tip.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -100%);
+  transition:
+    opacity 0.25s var(--ease-out),
+    transform 0.45s var(--ease-out),
+    visibility 0s;
+}
+.et-canvas .et-tip.is-below.is-open { transform: translate(-50%, 0); }
+
+.et-tip__body {
+  position: relative;
+  display: grid;
+  gap: 6px;
+}
+.et-tip__track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-2);
+}
+.et-tip__sw {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--c);
+}
+.et-tip__tgt {
+  margin-left: auto;
+  color: var(--fg-3);
+}
+.et-tip__label {
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.et-tip__time {
+  display: flex;
+  gap: 10px;
+  color: var(--fg-2);
+}
+.et-tip__dur {
+  margin-left: auto;
+  color: var(--fg-3);
+}
+
+/* --------------------------------------------------------------------------
+   Legend
+   -------------------------------------------------------------------------- */
+.et-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 24px;
+}
+.et-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  line-height: 1.3;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.et-legend__sw {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--c);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--c), white 45%);
+}
+
+/* --------------------------------------------------------------------------
+   Tablet & mobile — the panel scrolls sideways inside itself
+   -------------------------------------------------------------------------- */
+.et-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-3);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+.et-hint.is-on { opacity: 1; }
+.et-hint__arrow {
+  display: inline-block;
+  color: var(--accent);
+  animation: et-nudge 1.8s var(--ease-in-out) infinite;
+}
+.et-hint:not(.is-on) .et-hint__arrow { animation: none; }
+@keyframes et-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+@media (max-width: 1023px) {
+  .et {
+    --et-head-w: 128px;
+    --et-row-h: 38px;
+    --et-tip-w: 212px;
+  }
+  .et-hintrow {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: clamp(40px, 8vw, 64px);
+  }
+  .et-panel { margin-top: 14px; }
+  .et-head { gap: 8px; padding: 0 10px 0 12px; }
+  .et-head__name { font-size: 12px; }
+  .et-head__tgt { display: none; }
+  .et-legend { gap: 10px 18px; margin-top: 20px; }
+}
+
+@media (max-width: 639px) {
+  .et-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0 14px;
+  }
+  .et-bar__seq,
+  .et-bar__k { display: none; }
+}
+
+/* Reduced motion — no nudging hint; clip state changes stay (they're scroll-driven) */
+html.is-reduced .et-hint__arrow { animation: none; }
+html.is-reduced .et-canvas .et-tip,
+html.is-reduced .et-canvas .et-tip.is-open {
+  transform: translate(-50%, -100%);
+  transition-property: opacity, visibility;
+}
+html.is-reduced .et-canvas .et-tip.is-below,
+html.is-reduced .et-canvas .et-tip.is-below.is-open {
+  transform: translate(-50%, 0);
+}
