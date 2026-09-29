@@ -24,7 +24,7 @@ npm run preview  # serve the build
 | `scripts/media.mjs` | Builds every web asset for a project from its master (`npm run media`) |
 | `media-inbox/` | Your original ad exports (not deployed, not in git) |
 | `public/media/` | Local encoding output — **gitignored**; upload its contents to R2 after encoding |
-| Cloudflare R2 | All images + videos stream from the bucket behind `https://ibadportfolio.com`, mirroring the old `/public/media` tree without its `/media` prefix (`/work/<id>/…`, `/frames/…`, `/ai/…`, `/about.jpg`, `/noise.png`) |
+| Cloudflare R2 | All images + videos stream from the bucket behind `https://media.ibadportfolio.com`, mirroring the old `/public/media` tree without its `/media` prefix (`/work/<id>/…`, `/frames/…`, `/ai/…`, `/about.jpg`, `/noise.png`) |
 
 ## Adding a new ad
 
@@ -53,7 +53,7 @@ The form validates and shows a success state but does not send anything yet. Wir
 
 ## Media on Cloudflare R2
 
-The repo ships no media — every image and video streams from a public R2 bucket on the custom domain `https://ibadportfolio.com` (folder structure mirrors the old `/public/media`, minus the `/media` prefix). Keeps the repo and Vercel deploys tiny.
+The repo ships no media — every image and video streams from a public R2 bucket on the custom domain `https://media.ibadportfolio.com` (folder structure mirrors the old `/public/media`, minus the `/media` prefix). Keeps the repo and Vercel deploys tiny.
 
 - **Base URL**: `MEDIA_URL` in `src/data/site.js`. Override per-environment with `VITE_MEDIA_URL` in `.env.local` (e.g. a staging bucket or the raw `pub-….r2.dev` endpoint).
 - **CORS (required)**: the scroll-scrubbed videos fetch their file with `fetch()` into a blob, so the bucket must send CORS headers. In the R2 bucket settings add a CORS policy allowing `GET` from `https://ibadportfolio.com` and your deploy/preview origins (`AllowedOrigins: ["*"]` is fine for a public bucket).

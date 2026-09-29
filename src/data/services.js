@@ -1,5 +1,5 @@
 // R2 base — inlined from site.js (MEDIA_URL); see that file for env override
-const R2 = 'https://ibadportfolio.com'
+const R2 = 'https://media.ibadportfolio.com'
 
 export const SERVICES = [
   {

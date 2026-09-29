@@ -41,12 +41,12 @@ export const CTA_LINES = {
 
 /**
  * Cloudflare R2 — every image and video streams from the bucket behind
- * https://ibadportfolio.com. Its contents mirror the old /public/media tree,
+ * https://media.ibadportfolio.com. Its contents mirror the old /public/media tree,
  * minus the /media prefix (…/work/ad-05/full.mp4, /frames/f01.jpg, …).
  * Set VITE_MEDIA_URL in a .env.local to point at another bucket (staging,
  * r2.dev endpoint) without touching code.
  */
-export const MEDIA_URL = (import.meta.env.VITE_MEDIA_URL || 'https://ibadportfolio.com').replace(/\/+$/, '')
+export const MEDIA_URL = (import.meta.env.VITE_MEDIA_URL || 'https://media.ibadportfolio.com').replace(/\/+$/, '')
 
 /** Prefix a site-relative /media/... path with the R2 base */
 export const media = (path) => `${MEDIA_URL}${path}`

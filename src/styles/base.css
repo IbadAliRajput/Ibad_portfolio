@@ -228,7 +228,7 @@ html.has-cursor * { cursor: none !important; }
   z-index: var(--z-grain);
   pointer-events: none;
   /* film-grain texture — served from the Cloudflare R2 media bucket */
-  background-image: url('https://ibadportfolio.com/noise.png');
+  background-image: url('https://media.ibadportfolio.com/noise.png');
   background-size: 180px 180px;
   opacity: 0.045;
   mix-blend-mode: overlay;
