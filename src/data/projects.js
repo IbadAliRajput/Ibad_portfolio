@@ -52,7 +52,7 @@ function buildTimeline(duration, rows) {
 /** Media paths for a project folder, plus per-beat stills and per-hook clips */
 // Inlined base — this file must stay import-free (scripts/media.mjs reads it
 // with plain Node). Keep in sync with MEDIA_URL in site.js.
-const WORK = 'https://ibadportfolio.com/work'
+const WORK = 'https://media.ibadportfolio.com/work'
 function project(p) {
   const dir = `${WORK}/${p.media.id}`
   return {
