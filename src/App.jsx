@@ -10,6 +10,7 @@ import HUD from './components/HUD'
 import Footer from './components/Footer'
 import VideoModal from './components/VideoModal'
 import MotionToast from './components/MotionToast'
+import MediaGuard from './components/MediaGuard'
 import Home from './pages/Home'
 import Work from './pages/Work'
 import CaseStudy from './pages/CaseStudy'
@@ -73,6 +74,7 @@ export default function App() {
             <HUD />
             <Cursor />
             <MotionToast />
+            <MediaGuard />
             <div className="grain" aria-hidden="true" />
             <RefreshOnLoad />
           </TransitionProvider>

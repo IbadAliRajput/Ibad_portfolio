@@ -38,10 +38,12 @@ const STEPS = ['You send the brief', 'We map the hook & angle on a short call', 
 
 const ACCEPT_EXT = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'pages', 'mp4', 'mov']
 const ACCEPT = ACCEPT_EXT.map((e) => `.${e}`).join(',')
-const MAX_MB = 25
+const MAX_MB = 10
 const MAX_BYTES = MAX_MB * 1024 * 1024
 const AREA_MAX = 320 // px — the message grows with its content up to here, then scrolls
-const MOCK_LATENCY = 1200
+
+/** Formspree endpoint — set VITE_FORMSPREE_ID to override, otherwise the live form ID */
+const FORMSPREE_ID = import.meta.env.VITE_FORMSPREE_ID || 'xrpbdnre'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const REQUIRED = ['name', 'email', 'message']
@@ -105,36 +107,36 @@ function buildSummary(data, file) {
 }
 
 /**
- * Transport. Mocked for now: resolves after ~1.2s and honours `signal` so an
- * unmount mid-send never touches state.
+ * Transport — Formspree. `payload` is multipart FormData: name, email, company,
+ * need, volume, message, brief (file), source and the `_gotcha` honeypot.
+ * Set VITE_FORMSPREE_ID (from formspree.io → your form → Integration) via Vercel.
  */
 function sendBrief(payload, signal) {
-  // TODO(Ibad): wire a real endpoint (Formspree / Resend / a serverless route).
-  // `payload` is already multipart FormData — name, email, company, need, volume,
-  // message, brief (file), source and the `_gotcha` honeypot — so wiring is e.g.:
-  //
-  //   return fetch('https://formspree.io/f/<form-id>', {
-  //     method: 'POST',
-  //     body: payload,
-  //     headers: { Accept: 'application/json' },
-  //     signal,
-  //   }).then((res) => {
-  //     if (!res.ok) throw new Error(`Send failed (${res.status})`)
-  //   })
-  //
-  // Keep MAX_MB in sync with the provider's upload limit. A rejected promise
-  // shows the inline "didn't go through" message and keeps the form filled.
-  return new Promise((resolve, reject) => {
-    const t = setTimeout(resolve, MOCK_LATENCY)
-    signal.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(t)
-        reject(new DOMException('Aborted', 'AbortError'))
-      },
-      { once: true },
-    )
+  if (!FORMSPREE_ID) {
+    return Promise.reject(new Error('Form endpoint not configured (VITE_FORMSPREE_ID missing).'))
+  }
+  return fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+    method: 'POST',
+    body: payload,
+    headers: { Accept: 'application/json' },
+    signal,
   })
+    .then(async (res) => {
+      if (!res.ok) {
+        let detail = ''
+        try {
+          const body = await res.json()
+          detail = body?.errors?.map((e) => e.message).join(' ') ?? ''
+        } catch {
+          /* non-JSON error body — fall back to the status */
+        }
+        throw new Error(detail || `Send failed (${res.status})`)
+      }
+    })
+    .catch((err) => {
+      if (err?.name === 'AbortError') throw err
+      throw err instanceof Error ? err : new Error('Send failed')
+    })
 }
 
 /* --------------------------------------------------------------------------

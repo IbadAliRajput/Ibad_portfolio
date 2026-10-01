@@ -141,6 +141,8 @@ export default function VerticalVideo({
           loop
           preload="metadata"
           aria-hidden="true"
+          disablePictureInPicture
+          controlsList="nodownload noremoteplayback"
           onPlaying={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onCanPlay={() => shouldPlay && safePlay(videoRef.current)}

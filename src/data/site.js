@@ -3,7 +3,7 @@ export const SITE = {
   name: 'Ibad',
   role: 'Performance Video Editor & AI Creative Producer',
   tagline: 'Short-form ads built for attention, retention & conversion.',
-  email: 'ibadali769@gmail.com',
+  email: 'contact@ibadportfolio.com',
   availability: 'Booking projects for Q4 2026',
   location: 'Remote — working worldwide',
   socials: [{ label: 'LinkedIn', href: 'https://pk.linkedin.com/in/ibad-ali-ab5402374' }],
