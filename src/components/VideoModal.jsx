@@ -206,6 +206,8 @@ export default function VideoModal({ item, onClose }) {
             onClick={toggle}
             onPlay={() => setPaused(false)}
             onPause={() => setPaused(true)}
+            disablePictureInPicture
+            controlsList="nodownload noremoteplayback"
           />
           {SITE.placeholderMode && shown.caption && (
             <AdCaption text={shown.caption} hl={shown.captionHl} className="vm__caption" />
