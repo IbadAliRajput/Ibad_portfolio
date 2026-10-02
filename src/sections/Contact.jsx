@@ -87,11 +87,16 @@ function validate(data) {
 
 const firstName = (v) => String(v ?? '').trim().split(/\s+/)[0]
 
-/** Multipart payload — a real endpoint can take it as-is */
+/** Multipart payload — a real endpoint can take it as-is.
+ *  Formspree's free plan rejects file uploads, so the brief file is sent as a
+ *  reference (name + size) and the sender is nudged to share a link instead. */
 function buildPayload(form, file) {
   const data = new FormData(form)
-  data.delete('brief') // the dropzone keeps the file in state (drag & drop never touches the input)
-  if (file) data.append('brief', file, file.name)
+  data.delete('brief') // never POST the file itself — see note above
+  if (file) {
+    data.append('brief_file', `${file.name} (${formatBytes(file.size)})`)
+    data.append('message', `${String(data.get('message') ?? '').trim()}\n\n[Attached brief: ${file.name} — shared via link]`)
+  }
   data.append('source', 'portfolio/contact')
   return data
 }
@@ -301,7 +306,7 @@ function Dropzone({ file, error, inputRef, onPick, onRemove, className = '' }) {
           or <span className="ct-drop__browse">browse your files</span>
         </span>
         <span id="ct-file-hint" className="ct-drop__hint t-mono">
-          PDF, DOC, TXT, RTF, Pages, MP4, MOV · Max {MAX_MB} MB
+          PDF, DOC, TXT, RTF, Pages, MP4, MOV · Share a Drive/Dropbox link for big files
         </span>
       </label>
 
@@ -650,7 +655,7 @@ export default function Contact() {
     if (!ACCEPT_EXT.includes(extOf(f.name))) {
       msg = `“${f.name}” isn’t a supported format. Use PDF, DOC, DOCX, TXT, RTF, Pages, MP4 or MOV.`
     } else if (f.size > MAX_BYTES) {
-      msg = `That file is ${formatBytes(f.size)} — the limit is ${MAX_MB} MB. Share a link in the message instead.`
+      msg = `That file is ${formatBytes(f.size)} — too large to track here. Share a Drive or Dropbox link in the message instead.`
     }
     if (msg) {
       setFileError(msg)
@@ -717,7 +722,12 @@ export default function Contact() {
       await sendBrief(payload, ctrl.signal)
     } catch {
       if (ctrl.signal.aborted) return
-      const msg = `That didn’t go through. Please try again, or email ${SITE.email}.`
+      const msg = (() => {
+        const base = `That didn’t go through. Please try again, or email ${SITE.email}.`
+        return err instanceof Error && err.message && !/^(Send failed|Form endpoint)/.test(err.message)
+          ? `${base} (${err.message})`
+          : base
+      })()
       setStatus('idle')
       setSendError(msg)
       announce(msg)
