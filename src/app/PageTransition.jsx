@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useNavigationType } from 'react-router'
-import { gsap, ScrollTrigger, EASE } from '../lib/gsap'
+import { gsap, ScrollTrigger, EASE, readScroll } from '../lib/gsap'
 import { prefersReducedMotion } from '../lib/env'
 import { TransitionContext, usePageTransition, useScroll } from './context'
 import './PageTransition.css'
@@ -76,7 +76,7 @@ export function TransitionProvider({ children }) {
   // swap can clamp it)
   useEffect(() => {
     const onScroll = () => {
-      if (!busy.current) positions.current.set(lastKey.current, window.scrollY)
+      if (!busy.current) positions.current.set(lastKey.current, readScroll())
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)

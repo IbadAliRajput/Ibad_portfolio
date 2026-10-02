@@ -96,14 +96,29 @@ export default function ScrubVideo({ src, poster, className = '', smoothing = 0.
         if (Math.abs(s.target - s.current) < 0.0004) s.current = s.target
       }
       const t = Math.min(s.duration - 0.04, s.current * s.duration)
-      if (v.seeking || Math.abs(t - applied) < 0.001) return
+      // in motion, a seek under half a frame (24fps) would decode the same picture again;
+      // once settled, land exactly on the target
+      const step = s.current === s.target ? 0.001 : 0.02
+      if (v.seeking || Math.abs(t - applied) < step) return
       applied = t
       v.currentTime = t
     }
-    gsap.ticker.add(tick)
+    // only tick while the video is on (or about to be on) screen
+    let ticking = false
+    const vis = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting === ticking) return
+        ticking = e.isIntersecting
+        if (ticking) gsap.ticker.add(tick)
+        else gsap.ticker.remove(tick)
+      },
+      { rootMargin: '25% 0px' },
+    )
+    vis.observe(v)
 
     return () => {
       io.disconnect()
+      vis.disconnect()
       ctrl.abort()
       gsap.ticker.remove(tick)
       v.removeEventListener('loadedmetadata', onMeta)

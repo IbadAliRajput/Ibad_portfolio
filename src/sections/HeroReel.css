@@ -141,8 +141,9 @@ html.is-reduced .hr__cue-line::after { animation: none; transform: none; }
   width: var(--pw);
   height: var(--ph);
   transform-origin: 50% 50%;
-  will-change: transform;
 }
+/* a layer only while the hero is near (lib/perf.js → watchNear) */
+[data-near] .hr__phone { will-change: transform; }
 .hr__phone-in {
   position: relative;
   width: 100%;

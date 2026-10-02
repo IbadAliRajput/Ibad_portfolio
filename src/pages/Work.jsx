@@ -1194,9 +1194,16 @@ export default function Work() {
         evaluate(e.target)
       }
       const onLeave = () => hide()
-      // Content scrolling under a resting cursor keeps the frame on the right row
+      // Content scrolling under a resting cursor keeps the frame on the right row — found
+      // from the rows' boxes, not a page-wide elementFromPoint hit test every scroll frame
+      // (content ignores the pointer while it scrolls — lib/perf.js)
       const onScroll = () => {
-        if (active) evaluate(document.elementFromPoint(px, py))
+        if (!active) return
+        const row = Array.from(list.querySelectorAll('.wx-row')).find((el) => {
+          const r = el.getBoundingClientRect()
+          return px >= r.left && px < r.right && py >= r.top && py < r.bottom
+        })
+        evaluate(row ?? null)
       }
 
       list.addEventListener('pointermove', onMove)

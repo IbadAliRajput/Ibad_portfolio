@@ -85,6 +85,17 @@
 .glass.is-refracting { --glass-bg: rgba(255, 255, 255, 0.025); }
 .glass--dark.is-refracting { --glass-bg: rgba(10, 10, 12, 0.3); }
 
+/* Lite (lib/perf.js): the bezel refraction becomes plain frosted glass. Its SVG
+   filter is ~8 full passes over the backdrop, re-run on every scrolled frame;
+   the blur alone is two. !important outranks the inline backdrop-filter, so a
+   device that drops to lite mid-visit switches without re-rendering. */
+html.is-lite .glass.is-refracting > .glass__backdrop {
+  backdrop-filter: blur(16px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(170%) !important;
+}
+html.is-lite .glass.is-refracting { --glass-bg: rgba(255, 255, 255, 0.045); }
+html.is-lite .glass--dark.is-refracting { --glass-bg: rgba(10, 10, 12, 0.42); }
+
 @media (prefers-reduced-transparency: reduce) {
   .glass { --glass-bg: rgba(22, 22, 26, 0.94); }
 }

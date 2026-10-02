@@ -430,8 +430,8 @@ html.is-reduced .df-stage__arrow {
   bottom: 0;
   width: 0;
   pointer-events: none;
-  will-change: transform;
 }
+[data-near] .df-ph { will-change: transform; }
 .df-ph__line {
   position: absolute;
   left: -0.5px;

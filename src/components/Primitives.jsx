@@ -59,13 +59,19 @@ export function Counter({ value, prefix = '', suffix = '', decimals = 0, duratio
       const el = ref.current
       const fmt = (n) => `${prefix}${n.toFixed(decimals)}${suffix}`
       const o = { v: 0 }
+      let shown = el.textContent
       gsap.to(o, {
         v: value,
         duration,
         ease: 'expo.out',
         scrollTrigger: { trigger: el, start: 'top 92%', once: true },
         onUpdate: () => {
-          el.textContent = fmt(o.v)
+          // the expo tail repeats the same figure for many frames — rewriting display-size
+          // text re-lays it out and repaints it, so only write when it changes
+          const next = fmt(o.v)
+          if (next === shown) return
+          shown = next
+          el.textContent = next
         },
       })
     },
@@ -99,19 +105,41 @@ export function Marquee({ children, speed = 30, reverse = false, repeat = 2, cla
       const io = new IntersectionObserver(([e]) => loop.paused(!e.isIntersecting))
       io.observe(ref.current)
       if (!velocity) return () => io.disconnect()
+      // Scroll speed → loop speed: a quick rise (~0.2s) and a long settle (~1.2s) back to 1×,
+      // eased by one ticker callback that runs only while boosted. (Two fresh tweens per
+      // scroll frame used to churn the garbage collector.)
+      let rate = 1
+      let target = 1
+      let lastBoost = 0
+      let ticking = false
+      const tick = (time, dt) => {
+        if (performance.now() - lastBoost > 200) target = 1
+        const k = target > rate ? 0.2 : 0.045 // per 60fps frame
+        rate += (target - rate) * (1 - Math.pow(1 - k, dt / 16.67))
+        if (target === 1 && Math.abs(rate - 1) < 0.005) {
+          rate = 1
+          ticking = false
+          gsap.ticker.remove(tick)
+        }
+        loop.timeScale(rate)
+      }
       const st = ScrollTrigger.create({
         trigger: ref.current,
         start: 'top bottom',
         end: 'bottom top',
         onUpdate(self) {
-          const v = Math.min(Math.abs(self.getVelocity()) / 350, 5)
-          gsap.to(loop, { timeScale: 1 + v, duration: 0.2, overwrite: true })
-          gsap.to(loop, { timeScale: 1, duration: 1.2, delay: 0.2, ease: 'power2.out' })
+          target = 1 + Math.min(Math.abs(self.getVelocity()) / 350, 5)
+          lastBoost = performance.now()
+          if (!ticking) {
+            ticking = true
+            gsap.ticker.add(tick)
+          }
         },
       })
       return () => {
         io.disconnect()
         st.kill()
+        gsap.ticker.remove(tick)
       }
     },
     { scope: ref },

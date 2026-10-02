@@ -183,7 +183,7 @@
   color: var(--fg);
   font-kerning: normal;
 }
-html:not(.is-reduced) .mf-line {
+html:not(.is-reduced) [data-near] .mf-line {
   will-change: transform;
 }
 .mf-line .mf-line__serif {

@@ -62,9 +62,13 @@ html { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transpa
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 8px; }
 
-/* Custom cursor hides the native one on fine pointers */
-html.has-cursor,
-html.has-cursor * { cursor: none !important; }
+/* Custom cursor hides the native one on fine pointers — the same query that
+   mounts <Cursor>, applied from the first paint: adding a class to <html> on
+   the first pointer move re-matched this rule against every element at once */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  html * { cursor: none !important; }
+}
 
 /* --------------------------------------------------------------------------
    Typography
@@ -200,21 +204,42 @@ html.has-cursor * { cursor: none !important; }
 .chip--solid { background: var(--fg); color: var(--ink); border-color: transparent; }
 .chip--accent { background: var(--accent); color: var(--ink); border-color: transparent; }
 
-/* Recording dot */
+/* Recording dot — the pulse is a ring scaled on the compositor (animating
+   box-shadow repainted every dot on the main thread, forever) */
 .rec-dot {
+  position: relative;
+  isolation: isolate;
   display: inline-block;
   width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 0 var(--accent-glow);
-  animation: rec-pulse 2.4s var(--ease-soft) infinite;
   flex: none;
 }
-@keyframes rec-pulse {
-  0%   { box-shadow: 0 0 0 0 var(--accent-glow); }
-  70%  { box-shadow: 0 0 0 7px rgba(255, 90, 31, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 90, 31, 0); }
+.rec-dot::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  animation: rec-pulse 2.4s var(--ease-soft) infinite;
 }
+/* the old 0 → 7px spread on a 7px dot = a ring scaled 1 → 3 */
+@keyframes rec-pulse {
+  0%   { transform: scale(1); opacity: 1; }
+  70%  { transform: scale(3); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* Endless CSS loops idle while their section is far off screen (lib/perf.js →
+   watchNear): a running animation re-styles its element every frame, which also
+   makes the frame's scroll write pay for a style pass. The nav and HUD dots sit
+   outside any section, so they always run. */
+section:not([data-near]) .rec-dot::after,
+section:not([data-near]) .hr__cue-line::after,
+section:not([data-near]) .df-stage__arrow,
+section:not([data-near]) .hk-status__dot,
+section:not([data-near]) .et-hint__arrow { animation-play-state: paused; }
 
 /* Ad-caption style highlight (the look of burned-in short-form captions) */
 .caption-hl {
@@ -230,9 +255,12 @@ html.has-cursor * { cursor: none !important; }
 /* --------------------------------------------------------------------------
    Film grain overlay
    -------------------------------------------------------------------------- */
+/* The texture tiles every 180px, so the layer only needs one tile of overscan
+   for the jitter — any offset of a tiling noise looks the same. (It used to be
+   twice the viewport each way: ~2.2× the pixels to blend every frame.) */
 .grain {
   position: fixed;
-  inset: -50%;
+  inset: -180px;
   z-index: var(--z-grain);
   pointer-events: none;
   /* film-grain texture — served from the Cloudflare R2 media bucket */
@@ -244,17 +272,36 @@ html.has-cursor * { cursor: none !important; }
 }
 @keyframes grain {
   0%   { transform: translate3d(0, 0, 0); }
-  20%  { transform: translate3d(-4%, 3%, 0); }
-  40%  { transform: translate3d(3%, -5%, 0); }
-  60%  { transform: translate3d(-6%, -2%, 0); }
-  80%  { transform: translate3d(5%, 4%, 0); }
+  20%  { transform: translate3d(-110px, 70px, 0); }
+  40%  { transform: translate3d(80px, -120px, 0); }
+  60%  { transform: translate3d(-150px, -50px, 0); }
+  80%  { transform: translate3d(130px, 100px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
+/* Lite: a still grain, laid on normally. An overlay blend re-reads the whole
+   screen behind it every frame; at this strength the two read the same. */
+html.is-lite .grain {
+  animation: none;
+  mix-blend-mode: normal;
+  opacity: 0.028;
+}
+
+/* While the page moves under a still pointer, a transparent shield sits over
+   the content (below the nav) so hit tests stop at one element instead of
+   walking the whole page every frame — see lib/perf.js. Toggling it restyles
+   only itself; pointer movement drops it at once. */
+.scroll-shield {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-hud) - 1);
+  display: none;
+}
+.scroll-shield.is-on { display: block; }
 
 /* Gentle reduced-motion mode (see lib/env.js → getMotion). Hover/colour
    transitions stay; autonomous loops stop. */
-html.is-reduced .grain,
-html.is-reduced .rec-dot { animation: none; }
+html.is-reduced .grain { animation: none; }
+html.is-reduced .rec-dot::after { display: none; }
 html.is-reduced { scroll-behavior: auto; }
 
 html.is-scroll-locked { overflow: hidden; }

@@ -39,10 +39,12 @@
   transform-origin: left;
   transform: scaleX(var(--p, 0));
 }
+/* moved by transform (the track is a fixed 132px), so the playhead never re-lays out the page */
 .hud__track::after {
   content: '';
   position: absolute;
-  left: calc(var(--p, 0) * 100%);
+  left: 0;
+  transform: translateX(calc(var(--p, 0) * 132px));
   top: -4px;
   width: 1px;
   height: 9px;

@@ -23,8 +23,9 @@ export default function Cursor() {
     const root = rootRef.current
     const dot = dotRef.current
     const lens = lensRef.current
-    const html = document.documentElement
 
+    // parse the transforms now, while mounting, so the first pointer move reads nothing back
+    gsap.set([dot, lens], { x: 0, y: 0 })
     const dx = gsap.quickTo(dot, 'x', { duration: 0.12, ease: 'power3.out' })
     const dy = gsap.quickTo(dot, 'y', { duration: 0.12, ease: 'power3.out' })
     const lx = gsap.quickTo(lens, 'x', { duration: 0.5, ease: 'power3.out' })
@@ -43,9 +44,11 @@ export default function Cursor() {
       if (e.pointerType === 'touch') return
       if (!shown) {
         shown = true
-        html.classList.add('has-cursor')
         root.classList.add('is-visible')
-        gsap.set([dot, lens], { x: e.clientX, y: e.clientY })
+        // jump straight to the pointer through the quickTos (start = end) — a gsap.set here
+        // re-parsed the transforms from computed style and stalled the first move
+        dx(e.clientX, e.clientX); dy(e.clientY, e.clientY); lx(e.clientX, e.clientX); ly(e.clientY, e.clientY)
+        return
       }
       dx(e.clientX); dy(e.clientY); lx(e.clientX); ly(e.clientY)
     }
@@ -78,7 +81,6 @@ export default function Cursor() {
       window.removeEventListener('pointerup', up)
       document.documentElement.removeEventListener('pointerleave', leave)
       document.documentElement.removeEventListener('pointerenter', enter)
-      html.classList.remove('has-cursor')
       gsap.killTweensOf([dot, lens])
     }
   }, [fine])

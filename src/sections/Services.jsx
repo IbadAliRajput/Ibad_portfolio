@@ -287,9 +287,25 @@ export default function Services() {
         evaluate(e.target)
       }
       const onLeave = () => hide()
-      // Content scrolls under a resting cursor: keep the frame pinned to it
+      // Content scrolls under a resting cursor: keep the frame pinned to it. The row is found
+      // from the rows' own boxes — a page-wide elementFromPoint every scroll frame was a full
+      // hit test, and content ignores the pointer while it scrolls (lib/perf.js) anyway
+      const rowEls = Array.from(list.querySelectorAll('.sv-row'))
+      const inside = (el) => {
+        const r = el.getBoundingClientRect()
+        return px >= r.left && px < r.right && py >= r.top && py < r.bottom
+      }
       const onScroll = () => {
-        if (active) evaluate(document.elementFromPoint(px, py))
+        if (!active) return
+        const row = rowEls.find(inside)
+        const panel = row?.classList.contains('is-open') ? row.querySelector('.sv-row__panel') : null
+        if (!row || (panel && inside(panel))) {
+          hide()
+          return
+        }
+        place(false)
+        swap(Number(row.dataset.i))
+        show()
       }
 
       list.addEventListener('pointermove', onMove)

@@ -418,8 +418,8 @@
   width: 260vw;
   display: grid;
   grid-template-rows: var(--pr-ruler) minmax(0, 1fr);
-  will-change: transform;
 }
+[data-near] .pr-strip { will-change: transform; }
 /* Pre-roll / post-roll: no media before 00:00 or after 01:00 */
 .pr-strip::before,
 .pr-strip::after {

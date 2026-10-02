@@ -252,7 +252,6 @@
   box-shadow: 0 0 0 1px var(--line-2), 0 48px 96px -44px rgba(0, 0, 0, 0.9);
   container-type: inline-size;
   isolation: isolate;
-  transform: translateZ(0);
   user-select: none;
   -webkit-user-select: none;
 }
@@ -1104,7 +1103,9 @@
 .ai-glow__blob--a { left: 0; top: 2%; width: 52%; }
 .ai-glow__blob--b { right: 2%; top: 14%; width: 44%; }
 .ai-glow__blob--c { left: 32%; bottom: 0; width: 40%; }
-html:not(.is-reduced) .ai-glow__blob { will-change: transform; }
+/* layers only while the section is near (lib/perf.js → watchNear) */
+html:not(.is-reduced) [data-near] .ai-glow__blob { will-change: transform; }
+[data-near] .ai-frame { transform: translateZ(0); }
 
 .ai-bento {
   position: relative;
