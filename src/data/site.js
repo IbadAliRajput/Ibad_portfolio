@@ -48,8 +48,17 @@ export const CTA_LINES = {
  */
 export const MEDIA_URL = (import.meta.env.VITE_MEDIA_URL || 'https://media.ibadportfolio.com').replace(/\/+$/, '')
 
+/**
+ * New media that isn't on R2 yet: list its paths in VITE_MEDIA_LOCAL (comma-separated,
+ * in .env.local) and drop the files into public/media — `npm run dev` then serves those
+ * from disk. Both are gitignored, and a production build always uses R2.
+ */
+const LOCAL = new Set(
+  import.meta.env.DEV ? (import.meta.env.VITE_MEDIA_LOCAL || '').split(',').map((s) => s.trim()).filter(Boolean) : [],
+)
+
 /** Prefix a site-relative /media/... path with the R2 base */
-export const media = (path) => `${MEDIA_URL}${path}`
+export const media = (path) => (LOCAL.has(path) ? `/media${path}` : `${MEDIA_URL}${path}`)
 
 /**
  * Frame library — stills pulled from the real ads (frames/ in the R2 bucket).
@@ -59,9 +68,14 @@ export const POSTERS = Array.from({ length: 16 }, (_, i) => media(`/frames/f${St
 
 const AI = media('/ai')
 export const MEDIA = {
-  /** The hero reel: a real 60-second ad (Cleantra), scrubbed on scroll — GOP-6 so seeks stay cheap */
-  reel: media('/work/ad-05/reel.mp4'),
-  reelFull: media('/work/ad-05/full.mp4'),
+  /**
+   * The hero reel: a real 60-second ad, scrubbed on scroll — GOP-6 so seeks stay cheap.
+   * The hero shows it unbranded: the "-nobrand" encodes blur the bottle's label and the
+   * brand caption, and the full cut also mutes the spoken brand name. The case study
+   * (reelSlug) keeps the original files.
+   */
+  reel: media('/work/ad-05/reel-nobrand.mp4'),
+  reelFull: media('/work/ad-05/full-nobrand.mp4'),
   reelPoster: media('/work/ad-05/poster.jpg'),
   reelSlug: 'cleantra-tight-ring',
   reelSeconds: 59,
@@ -70,7 +84,7 @@ export const MEDIA = {
     { id: 'hook', range: [0, 7] }, // the wedding ring
     { id: 'problem', range: [7, 19] }, // the water pill
     { id: 'explain', range: [19, 28] }, // the compression stocking
-    { id: 'mechanism', range: [28, 46] }, // Cleantra and its herbs
+    { id: 'mechanism', range: [28, 46] }, // the product and its herbs
     { id: 'proof', range: [46, 55] }, // the puffiness fades
     { id: 'cta', range: [55, 59] }, // tested, guarantee, link
   ],

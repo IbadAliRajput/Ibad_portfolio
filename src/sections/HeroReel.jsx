@@ -326,7 +326,8 @@ export default function HeroReel() {
       src: MEDIA.reelFull,
       poster: MEDIA.reelPoster,
       title: REEL_PROJECT.title,
-      kicker: `${REEL_PROJECT.client} — the ${toShort(REEL)} ad`,
+      // the hero keeps the brand out (MEDIA.reel in data/site.js) — format, not client
+      kicker: `${REEL_PROJECT.formatLabel} · ${toShort(REEL)}`,
       meta: REEL_PROJECT.summary,
     })
 
@@ -406,7 +407,7 @@ export default function HeroReel() {
 
               <div className="hr__phone-hero">
                 <div className="hr__ph-top">
-                  <span className="chip hr__ph-chip">{REEL_PROJECT.client}</span>
+                  <span className="chip hr__ph-chip">{REEL_PROJECT.formatLabel}</span>
                   <span className="t-mono">{toShort(REEL)}</span>
                 </div>
                 {SITE.placeholderMode && (
@@ -451,7 +452,8 @@ export default function HeroReel() {
                 <div className="hr__sponsor">
                   <span className="hr__avatar" />
                   <span>
-                    <b>{REEL_PROJECT.client}</b>
+                    {/* the account name, blurred like the bottle's label */}
+                    <b className="hr__redact" />
                     <span className="t-mono">Sponsored</span>
                   </span>
                   <span className="hr__learn">Learn more</span>
@@ -462,7 +464,7 @@ export default function HeroReel() {
               </div>
             </div>
 
-            <Glass as="button" className="hr__play hr__phone-hero" radius={999} tone="light" onClick={playReel} data-cursor="play" aria-label={`Watch the full ${REEL_PROJECT.client} ad`}>
+            <Glass as="button" className="hr__play hr__phone-hero" radius={999} tone="light" onClick={playReel} data-cursor="play" aria-label={`Watch the full ${toShort(REEL)} ad`}>
               <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
                 <path d="M5 3.5v9l7.5-4.5z" fill="currentColor" />
               </svg>
@@ -474,7 +476,7 @@ export default function HeroReel() {
         {/* ---------- REEL STATE ---------- */}
         <div className="hr__left hr__reel-ui">
           <p className="t-mono t-mute">
-            Anatomy of a real {toShort(REEL)} ad — {REEL_PROJECT.client}
+            Anatomy of a real {toShort(REEL)} ad
           </p>
           <div className="hr__beat-label" aria-hidden="true">
             {BEATS.map((b) => (

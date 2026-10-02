@@ -324,6 +324,16 @@ html.is-reduced .hr__cue-line::after { animation: none; transform: none; }
 }
 .hr__sponsor > span:nth-child(2) { display: grid; }
 .hr__sponsor b { font-weight: 600; }
+/* the brand's handle, redacted: a soft bar where the name would sit */
+.hr__redact {
+  display: block;
+  width: 15cqw;
+  height: 2.3cqw;
+  margin: 0.55cqw 0 0.75cqw;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.78);
+  filter: blur(0.5cqw);
+}
 .hr__sponsor .t-mono { font-size: 2.4cqw; color: rgba(255, 255, 255, 0.6); }
 .hr__avatar {
   width: 8.4cqw;
