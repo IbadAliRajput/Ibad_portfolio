@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { ReadyProvider, ScrollProvider, VideoProvider } from './app/Providers'
 import { TransitionProvider } from './app/PageTransition'
 import { ScrollTrigger } from './lib/gsap'
+import { watchNear } from './lib/perf'
 import Preloader from './components/Preloader'
 import Cursor from './components/Cursor'
 import Nav from './components/Nav'
@@ -50,6 +51,15 @@ function RefreshOnLoad() {
       queries.forEach((m) => m.removeEventListener('change', onBreakpoint))
     }
   }, [pathname])
+  // sections near the viewport get [data-near] — their compositor layers live only meanwhile
+  useEffect(
+    () =>
+      watchNear((scan) => {
+        ScrollTrigger.addEventListener('refresh', scan)
+        return () => ScrollTrigger.removeEventListener('refresh', scan)
+      }),
+    [],
+  )
   return null
 }
 

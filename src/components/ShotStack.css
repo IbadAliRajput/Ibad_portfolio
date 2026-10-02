@@ -12,8 +12,9 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  will-change: transform;
 }
+/* pre-promoted so every cut is instant — while the section is near only */
+[data-near] .shots > img { will-change: transform; }
 .shots > img.is-on { opacity: 1; }
 /* one-frame white flash on each hard cut, like a flash-frame in the edit */
 .shots::after {

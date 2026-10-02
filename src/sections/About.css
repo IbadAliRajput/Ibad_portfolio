@@ -65,7 +65,7 @@
   height: 124%; /* headroom for the ±8% parallax drift */
   object-fit: cover;
 }
-html:not(.is-reduced) .ab-portrait__img {
+html:not(.is-reduced) [data-near] .ab-portrait__img {
   will-change: transform; /* scrubbed parallax layer */
 }
 .ab-portrait__crop {
@@ -148,7 +148,7 @@ html:not(.is-reduced) .ab-portrait__img {
 }
 @media (hover: hover) and (pointer: fine) {
   .ab-roles:hover .ab-roles__glow { opacity: 0.8; }
-  html:not(.is-reduced) .ab-roles__glow { will-change: transform; } /* follows the pointer */
+  html:not(.is-reduced) [data-near] .ab-roles__glow { will-change: transform; } /* follows the pointer */
 }
 
 .ab-eq {

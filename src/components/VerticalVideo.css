@@ -8,9 +8,11 @@
   background: #000;
   box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgba(0, 0, 0, 0.8);
   isolation: isolate;
-  transform: translateZ(0);
   -webkit-tap-highlight-color: transparent;
 }
+/* own layer (keeps the rounded clip exact over a playing video) while near the
+   viewport only — ~20 of these on Home were all promoted for the whole visit */
+[data-near] .vv { transform: translateZ(0); }
 .vv.is-interactive { cursor: pointer; }
 
 .vv__poster,

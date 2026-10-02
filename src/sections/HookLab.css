@@ -74,10 +74,10 @@
   background-position: center;
   filter: blur(56px) saturate(1.35);
   opacity: 0.42;
-  transform: translateZ(0);
   transition: background-image 0.6s var(--ease-out);
   pointer-events: none;
 }
+[data-near] .hk-ambient { transform: translateZ(0); }
 
 /* Timecode in the top-right of the preview */
 .hk-tc {

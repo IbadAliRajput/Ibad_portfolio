@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Lenis from 'lenis'
-import { gsap, ScrollTrigger } from '../lib/gsap'
+import { gsap, ScrollTrigger, setScrollSource, invalidateScroll } from '../lib/gsap'
 import { prefersReducedMotion } from '../lib/env'
+import { watchScroll } from '../lib/perf'
 import { ReadyContext, ScrollContext, VideoContext } from './context'
 
 export function ReadyProvider({ children }) {
@@ -20,6 +21,15 @@ export function ScrollProvider({ children }) {
   const [lenis, setLenis] = useState(null)
   const lenisRef = useRef(null)
 
+  // the scroll flag + frame-rate watch follow whichever scroller is live
+  useEffect(() => {
+    if (lenis) return watchScroll((fn) => lenis.on('scroll', fn))
+    return watchScroll((fn) => {
+      window.addEventListener('scroll', fn, { passive: true })
+      return () => window.removeEventListener('scroll', fn)
+    })
+  }, [lenis])
+
   useEffect(() => {
     if (prefersReducedMotion()) return
     const l = new Lenis({
@@ -28,11 +38,16 @@ export function ScrollProvider({ children }) {
       smoothWheel: true,
       touchMultiplier: 1.3,
     })
+    l.on('scroll', invalidateScroll) // before ScrollTrigger reads it (lib/gsap.js → readScroll)
     l.on('scroll', ScrollTrigger.update)
     const tick = (time) => l.raf(time * 1000)
-    gsap.ticker.add(tick)
+    // first in the frame: scroll (and let ScrollTrigger read it) while the page is still clean,
+    // then GSAP renders. Behind GSAP's render, every scrollTo + scroll read forced a full
+    // style recalc and layout of the tweens it had just written.
+    gsap.ticker.add(tick, false, true)
     gsap.ticker.lagSmoothing(0)
     if (document.documentElement.classList.contains('is-scroll-locked')) l.stop()
+    setScrollSource(l)
     lenisRef.current = l
     // syncing React with an external system (the Lenis instance) is exactly what effects are for
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -40,6 +55,7 @@ export function ScrollProvider({ children }) {
     window.__lenis = l
     return () => {
       gsap.ticker.remove(tick)
+      setScrollSource(null)
       l.destroy()
       if (lenisRef.current === l) lenisRef.current = null
       delete window.__lenis
@@ -72,7 +88,10 @@ export function ScrollProvider({ children }) {
     window.scrollTo({ top: y, behavior: opts.immediate ? 'auto' : 'smooth' })
     // Let ScrollTrigger see the new position now (Lenis does this through its scroll event):
     // a refresh that runs before it has, measures pins out of order after a native jump
-    if (opts.immediate) ScrollTrigger.update()
+    if (opts.immediate) {
+      invalidateScroll() // the native scroll event hasn't fired yet
+      ScrollTrigger.update()
+    }
   }, [])
   const stop = useCallback(() => {
     lenisRef.current?.stop()

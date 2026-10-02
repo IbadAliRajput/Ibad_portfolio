@@ -44,5 +44,8 @@
 
 /* Marquee */
 .mq { overflow: clip; width: 100%; }
-.mq__track { display: flex; width: max-content; will-change: transform; }
+.mq__track { display: flex; width: max-content; }
+/* its own layer only while the section is near (lib/perf.js → watchNear): the
+   track is ~18,000px of stroked type — a big texture to keep around off screen */
+[data-near] .mq__track { will-change: transform; }
 .mq__half, .mq__item { display: flex; flex: none; }

@@ -129,8 +129,9 @@
   border-radius: inherit;
   background: var(--surface-2);
   box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.9);
-  will-change: transform, opacity;
 }
+/* 60 of these — promoted only while the section is near (lib/perf.js → watchNear) */
+[data-near] .it-tile { will-change: transform, opacity; }
 .it-tile__img {
   position: absolute;
   inset: 0;

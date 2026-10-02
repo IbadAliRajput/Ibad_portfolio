@@ -30,4 +30,48 @@ ScrollTrigger.config({ ignoreMobileResize: true })
 // pin it to 'manual' so back/forward positions are restored by the page transition instead
 ScrollTrigger.clearScrollMemory('manual')
 
-export { gsap, ScrollTrigger, SplitText, Flip, CustomEase, Observer, useGSAP }
+/**
+ * The page's scroll position, as ScrollTrigger reads it. Every native scroll
+ * event makes ScrollTrigger re-read window.scrollY — and that event lands after
+ * the frame's style writes, so each read forced a full style recalc: most of
+ * the forced work on every scrolled frame. While Lenis is gliding it has just
+ * written the position itself, so its own value is read back instead; at any
+ * other time (native, keyboard or scrollbar scrolling, refreshes, jumps) this
+ * reads the DOM exactly as ScrollTrigger always did. Registered before any
+ * trigger exists, since ScrollTrigger caches its scroll reader per scroller.
+ */
+let scrollSource = null
+export const setScrollSource = (lenis) => {
+  scrollSource = lenis
+}
+// A proxied scroller isn't cached by ScrollTrigger (every trigger asks), so the
+// DOM value is cached here — and dropped on anything that can move the page:
+// a native scroll event, a Lenis frame, a scroll write, a refresh.
+let cached = null
+export const invalidateScroll = () => {
+  cached = null
+}
+/** window.scrollY, without the forced style pass while Lenis is gliding */
+export const readScroll = () => {
+  if (scrollSource?.isScrolling === 'smooth') return scrollSource.animatedScroll
+  if (cached === null) cached = window.scrollY
+  return cached
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('scroll', invalidateScroll, { capture: true, passive: true })
+  ScrollTrigger.addEventListener('refreshInit', invalidateScroll)
+  ScrollTrigger.scrollerProxy(document.documentElement, {
+    scrollTop(value) {
+      if (arguments.length) {
+        window.scrollTo(0, value)
+        cached = null
+        return
+      }
+      return readScroll()
+    },
+    getBoundingClientRect: () => ({ top: 0, left: 0, width: window.innerWidth, height: window.innerHeight }),
+    pinType: 'fixed',
+  })
+}
+
+export { gsap, ScrollTrigger, SplitText, Flip, CustomEase, Observer, useGSAP } // + setScrollSource, readScroll, invalidateScroll above

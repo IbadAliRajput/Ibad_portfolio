@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
 import { useIsDesktop } from '../lib/hooks'
-import { useReady } from '../app/context'
+import { useReady, useScroll } from '../app/context'
 import { toTimecode } from '../lib/timecode'
 import './HUD.css'
 
@@ -14,6 +14,7 @@ import './HUD.css'
 export default function HUD() {
   const desktop = useIsDesktop()
   const { ready } = useReady()
+  const { lenis } = useScroll()
   const location = useLocation()
   const rootRef = useRef(null)
   const tcRef = useRef(null)
@@ -36,21 +37,42 @@ export default function HUD() {
     return () => window.removeEventListener('hud:mute', onMute)
   }, [])
 
-  // Timecode + progress
+  // Timecode + progress — written on scroll only, from Lenis's cached limit (or
+  // one measured per ScrollTrigger refresh): reading scrollHeight every frame
+  // forced a full-page layout on every tick
   useEffect(() => {
     if (!desktop) return
     let last = -1
-    const update = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+    let max = 0
+    const measure = () => {
+      max = document.documentElement.scrollHeight - window.innerHeight
+    }
+    const write = (p) => {
+      p = Math.min(1, Math.max(0, p))
       if (Math.abs(p - last) < 0.0002) return
       last = p
       if (tcRef.current) tcRef.current.textContent = toTimecode(p * 60)
       if (barRef.current) barRef.current.parentElement.style.setProperty('--p', p.toFixed(4))
     }
-    gsap.ticker.add(update)
-    return () => gsap.ticker.remove(update)
-  }, [desktop])
+    if (lenis) {
+      const off = lenis.on('scroll', (l) => write(l.progress))
+      write(lenis.progress)
+      return off
+    }
+    const onScroll = () => write(max > 0 ? window.scrollY / max : 0)
+    const onRefresh = () => {
+      measure()
+      onScroll()
+    }
+    measure()
+    onScroll()
+    ScrollTrigger.addEventListener('refresh', onRefresh)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      ScrollTrigger.removeEventListener('refresh', onRefresh)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [desktop, lenis])
 
   // Section markers
   useEffect(() => {

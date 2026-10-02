@@ -35,7 +35,10 @@
   background: radial-gradient(closest-side, var(--wk-tone), transparent);
   opacity: 0;
   transform: translate(-50%, -50%);
+  transition: opacity 1.4s var(--ease-soft);
 }
+/* the active card's tone (SelectedWork.jsx toggles it) */
+.wk-ambient__glow.is-on { opacity: 0.14; }
 
 /* --------------------------------------------------------------------------
    Track + items
@@ -282,7 +285,7 @@
     padding-left: max(var(--pad), calc((100% - var(--max)) / 2 + var(--pad)));
     padding-right: var(--pad);
   }
-  html:not(.is-reduced) .wk-track {
+  html:not(.is-reduced) [data-near] .wk-track {
     will-change: transform;
   }
   .wk-item {

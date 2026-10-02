@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import { supportsRefraction } from '../lib/env'
+import { isLite } from '../lib/perf'
 
 /**
  * Builds a displacement map for a rounded rectangle.
@@ -84,7 +85,8 @@ export default function Glass({
   const innerRef = useRef(null)
   const reactId = useId()
   const filterId = `lg${reactId.replace(/[^a-zA-Z0-9]/g, '')}`
-  const [canRefract] = useState(() => refract && supportsRefraction())
+  // lite devices skip building the filter at all (a mid-visit switch is handled in glass.css)
+  const [canRefract] = useState(() => refract && supportsRefraction() && !isLite())
   const [size, setSize] = useState(null)
 
   const setRef = (node) => {

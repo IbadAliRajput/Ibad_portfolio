@@ -16,7 +16,6 @@ const pad2 = (n) => String(n).padStart(2, '0')
 const LAST = FEATURED.length - 1
 const years = PROJECTS.map((p) => p.year)
 const YEARS = Math.min(...years) === Math.max(...years) ? String(years[0]) : `${Math.min(...years)}–${Math.max(...years)}`
-const GLOW = 0.14 // peak opacity of the ambient tone behind the active card
 const PARALLAX = 6 // xPercent travel of the poster inside its frame
 const POSTER_SCALE = 1.14 // head-room so the parallax never shows an edge
 const clampSkew = gsap.utils.clamp(-3, 3)
@@ -111,15 +110,16 @@ export default function SelectedWork() {
          Per-frame work is a single custom property; the counter + ambient tone
          only change on discrete index changes. */
       let current = 0
-      gsap.set(glows, { opacity: 0 })
-      gsap.set(glows[0], { opacity: GLOW })
+      // The tone crossfade is a CSS transition on .is-on (SelectedWork.css): the browser runs it
+      // on the compositor, while a JS opacity tween repainted the 1500px gradient every frame
+      glows.forEach((g, k) => g.classList.toggle('is-on', k === 0))
       const setProgress = (p) => {
         progressEl?.style.setProperty('--wk-p', p.toFixed(4))
         const i = Math.round(p * LAST)
         if (i === current) return
         const dir = i > current ? 1 : -1
-        gsap.to(glows[current], { opacity: 0, duration: 1.4, ease: EASE.soft, overwrite: true })
-        gsap.to(glows[i], { opacity: GLOW, duration: 1.4, ease: EASE.soft, overwrite: true })
+        glows[current]?.classList.remove('is-on')
+        glows[i]?.classList.add('is-on')
         current = i
         if (!num) return
         num.textContent = pad2(i + 1)
