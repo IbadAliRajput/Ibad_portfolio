@@ -720,7 +720,7 @@ export default function Contact() {
 
     try {
       await sendBrief(payload, ctrl.signal)
-    } catch {
+    } catch (err) {
       if (ctrl.signal.aborted) return
       const msg = (() => {
         const base = `That didn’t go through. Please try again, or email ${SITE.email}.`
